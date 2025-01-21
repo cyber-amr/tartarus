@@ -1,0 +1,31 @@
+{
+  "name": "kalam-katheeb-server",
+  "version": "1.0.0",
+  "description": "node.js app to host games for cyber-amr/kalam-katheeb",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cyber-amr/kalam-katheeb-server.git"
+  },
+  "keywords": [
+    "nodejs",
+    "node",
+    "websocket",
+    "mongodb",
+    "godot",
+    "gdscript",
+    "3d",
+    "card",
+    "game",
+    "server"
+  ],
+  "author": "Amr <amr@programmer.net>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/cyber-amr/kalam-katheeb-server/issues"
+  },
+  "homepage": "https://github.com/cyber-amr/kalam-katheeb-server#readme"
+}
