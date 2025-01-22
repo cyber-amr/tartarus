@@ -27,5 +27,8 @@
   "bugs": {
     "url": "https://github.com/cyber-amr/kalam-katheeb-server/issues"
   },
-  "homepage": "https://github.com/cyber-amr/kalam-katheeb-server#readme"
+  "homepage": "https://github.com/cyber-amr/kalam-katheeb-server#readme",
+  "dependencies": {
+    "express": "^4.21.2"
+  }
 }
