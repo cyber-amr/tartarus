@@ -29,6 +29,7 @@
   },
   "homepage": "https://github.com/cyber-amr/kalam-katheeb-server#readme",
   "dependencies": {
-    "express": "^4.21.2"
+    "express": "^4.21.2",
+    "mongodb": "^6.12.0"
   }
 }

@@ -1,5 +1,6 @@
 const express = require("express")
 const { join } = require('path')
+const db = require("./db")
 
 const app = express()
 const PORT = process.env.PORT || 8080
