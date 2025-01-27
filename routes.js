@@ -12,4 +12,9 @@ router.use((err, req, res, next) => {
     res.status(500).json({ message: 'Something broke!' })
 })
 
+// 404 handler
+router.use((req, res) => {
+    res.status(404).sendFile(path.join(__dirname, 'html', '404.html'))
+})
+
 module.exports = router;
