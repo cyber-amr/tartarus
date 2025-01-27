@@ -2,32 +2,118 @@
 <html lang="en">
 
 <head>
-  <title>Orphic Spirit - 404 | Page not found</title>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="initial-scale=1">
-  <meta name="description" content="Orphic Spirit is a game developer and publisher">
-  <meta name="keywords" content="cyber-amr, spirit, games, studio">
-  <meta property="og:image" content="https://amr-dev.info/studio.png">
-  <link rel="icon" type="image/x-icon" href="icon.ico" sizes="any">
-  <link rel="icon" type="image/svg+xml" href="icon.svg">
-  <script>
-    /*to prevent flashing of unstyled content on Firefox*/
-    let FIX_FF_FOUC;
-  </script>
-  <!-- Google tag (gtag.js) -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-MWHPXGX9FN"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'G-MWHPXGX9FN');
-  </script>
+    <title>Orphic Spirit - 404 | Page not found</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="initial-scale=1">
+    <meta name="description" content="Orphic Spirit is a game developer and publisher">
+    <meta name="keywords" content="cyber-amr, spirit, games, studio">
+    <meta property="og:image" content="https://amr-dev.info/studio.png">
+    <link rel="icon" type="image/x-icon" href="icon.ico" sizes="any">
+    <link rel="icon" type="image/svg+xml" href="icon.svg">
+    <script>
+        /*to prevent flashing of unstyled content on Firefox*/
+        let FIX_FF_FOUC;
+    </script>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-MWHPXGX9FN"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+        gtag('config', 'G-MWHPXGX9FN');
+    </script>
+    <style>
+        body {
+            background-color: #1a1b26;
+            color: #a9b3d6;
+            font-family: 'Courier New', 'Lucida Console', monospace;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            line-height: 1.6;
+        }
+        .error-container {
+            background-color: #24283b;
+            padding: 2rem;
+            border-radius: 4px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            width: 100%;
+            max-width: 600px;
+        }
+        .ascii-art {
+            color: #6faaf6;
+            white-space: pre;
+            font-size: 14px;
+            margin-bottom: 2rem;
+            line-height: 1.3;
+        }
+        .command-prompt {
+            color: #6faaf6;
+            margin-bottom: 1rem;
+        }
+        .error-code {
+            color: #f6666f;
+            font-weight: bold;
+            margin-bottom: 1rem;
+        }
+        button {
+            width: 100%;
+            padding: 0.5rem;
+            margin-top: 2rem;
+            background-color: #6faaf6;
+            color: #1a1b26;
+            border: none;
+            cursor: pointer;
+            font-family: 'Courier New', 'Lucida Console', monospace;
+            font-weight: bold;
+        }
+        button:focus,
+        button:hover {
+            background-color: #3c66c3;
+        }
+        .cursor {
+            animation: blink 0.5s step-start 0s infinite;
+        }
+        @keyframes blink {
+            50% { opacity: 0; }
+        }
+    </style>
 </head>
 
 <body>
-  <h1>
-    404 - Page not found
-  </h1>
+    <div class="error-container">
+        <div class="ascii-art">
+██   ██  ██████  ██   ██
+██   ██ ██  ████ ██   ██
+███████ ██ ██ ██ ███████
+     ██ ████  ██      ██
+     ██  ██████       ██
+        </div>
+        <div class="command-prompt">studio@amr-dev.info:~$ ./requested_page.html</div>
+        <div class="error-code">[ERROR] Process terminated with code 404... |</div>
+        <div class="error-message">
+            The page you are looking for seems to have been moved, deleted, or never existed.
+            Check the URL for typos
+        </div>
+        <button onclick="window.location.href='/'">RETURN TO HOME <span class="cursor">█</span></button>
+    </div>
+
+    <script>
+        const errorText = document.querySelector('.error-code');
+        const characters = ['|', '/', '─', '\\'];
+        let i = 0;
+
+        const filePath = window.location.pathname.split("/")
+        filePath.shift()
+        document.querySelector(".command-prompt").textContent = `studio@amr-dev.info:~$ ./${filePath.join("/")}.html`
+
+        setInterval(() => {
+            errorText.textContent = '[ERROR] Process terminated with code 404... ' + characters[i];
+            i = (i + 1) % characters.length;
+        }, 250);
+    </script>
 </body>
 
 </html>
