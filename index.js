@@ -8,6 +8,7 @@ const PORT = process.env.PORT || 8080
 app.use(express.static(join(__dirname, "public"), {
     maxAge: 600000 // 10 min
 }))
+app.use(express.json())
 app.use(routes)
 
 app.listen(PORT, () => {
