@@ -1,9 +1,25 @@
 const router = require('express').Router()
 const path = require('path')
+const db = require("./db.js")
 
 // Static page routes
 router.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'html', 'index.html'))
+})
+
+// API routes
+router.post('/api/available-username', async (req, res) => {
+    const username = req.body?.username
+    if (!username) return res.status(400).json({ error: 'username is required' })
+
+    if (!db.ready) return res.status(503).json({
+        error: 'Service Unavailable',
+        message: 'We experiencing high load. Please try again later.',
+    })
+
+    // TODO: add rateLimits
+
+    res.json({ available: !(await db.collection("users").findOne({ username })) })
 })
 
 // Error handling middleware
