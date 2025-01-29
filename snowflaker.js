@@ -66,6 +66,6 @@ class Snowflaker {
     }
 }
 
-const userSnowflaker = new Snowflaker({ workerId: parseInt(process.env.WORKER_ID, 10) })
+const userSnowflaker = new Snowflaker({ workerId: parseInt(process.env.WORKER_ID ?? 0, 10) })
 
 module.exports = { Snowflaker, userSnowflaker }
