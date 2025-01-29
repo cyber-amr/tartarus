@@ -52,7 +52,7 @@ class Snowflaker {
             (BigInt(timestamp - this.epoch) << this.timestampShift) |
             (BigInt(this.workerId) << BigInt(this.workerShift)) |
             BigInt(this.sequence)
-        );
+        ).toString();
     }
 
     // Utility to parse IDs
