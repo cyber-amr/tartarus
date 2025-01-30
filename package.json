@@ -1,14 +1,14 @@
 {
-  "name": "kalam-katheeb-server",
+  "name": "tartarus",
   "version": "1.0.0",
-  "description": "node.js app to host games for cyber-amr/kalam-katheeb",
+  "description": "node.js express app to host tartarus site and games",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/cyber-amr/kalam-katheeb-server.git"
+    "url": "git+https://github.com/cyber-amr/tartarus.git"
   },
   "keywords": [
     "nodejs",
@@ -25,9 +25,9 @@
   "author": "Amr <amr@programmer.net>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/cyber-amr/kalam-katheeb-server/issues"
+    "url": "https://github.com/cyber-amr/tartarus/issues"
   },
-  "homepage": "https://github.com/cyber-amr/kalam-katheeb-server#readme",
+  "homepage": "https://github.com/cyber-amr/tartarus#readme",
   "dependencies": {
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
