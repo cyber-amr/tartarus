@@ -31,7 +31,7 @@ router.post('/api/registered-email', async (req, res) => {
 
     // TODO: add rateLimits
 
-    res.json({ registered: !!(await db.collection("users").findOne({ email })) })
+    res.json({ registered: !!(await db.collection("secrets").findOne({ email: { address: email } })) })
 })
 
 // Error handling middleware
