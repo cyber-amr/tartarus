@@ -9,6 +9,8 @@ require("./db.js")
 const app = express()
 const PORT = process.env.PORT || 8080
 
+app.set("trust proxy", true)
+
 app.use(express.static(join(__dirname, "public"), {
     maxAge: 600000 // 10 min
 }))
