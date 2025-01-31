@@ -5,6 +5,16 @@ const db = require("./db.js")
 // Static page routes
 router.get('/', (req, res) => res.sendFile(path.join(__dirname, 'html', 'index.html')))
 
+// Auth routes
+router.get('/signup', (req, res) => res.sendFile(path.join(__dirname, 'html', 'signup.html')))
+router.post('/signup', async (req, res) => {
+    if (!req.body) return res.status(400).json({ error: "request body is empty" })
+    const { error, errorCode, _id } = await createUser(req.body, req.headers['x-forwarded-for'] ?? req.ip)
+    if (error) return res.status(errorCode ?? 400).json({ error })
+
+    res.status(201).set('Location', `/api/users/${_id}`)
+})
+
 // API routes
 router.post('/api/available-username', async (req, res) => {
     const username = req.body?.username
