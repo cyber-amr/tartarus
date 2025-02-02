@@ -20,3 +20,7 @@ app.use(routes)
 app.listen(PORT, () => {
 	console.log(`Listening at http://localhost:${PORT}`)
 })
+
+process.on("unhandledRejection", (r, p) => console.error(r, p))
+process.on("uncaughtException", (e, o) => console.error(e, o))
+process.on("uncaughtExceptionMonitor", (e, o) => console.error(e, o))
