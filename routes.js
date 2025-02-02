@@ -1,5 +1,6 @@
 const router = require('express').Router()
 const path = require('path')
+const { rateLimit } = require('express-rate-limit')
 const db = require("./db.js")
 
 // Static page routes
@@ -16,6 +17,12 @@ router.post('/signup', async (req, res) => {
 })
 
 // API routes
+router.use('/api', rateLimit({
+    keyGenerator: (req) => req.headers['x-forwarded-for'] ?? req.ip,
+    limit: 15,
+    windowMs: 30 * 1000
+}))
+
 router.post('/api/available-username', async (req, res) => {
     const username = req.body?.username
     if (!username) return res.status(400).json({ error: 'username is required' })
@@ -24,8 +31,6 @@ router.post('/api/available-username', async (req, res) => {
         error: 'Service Unavailable',
         message: 'We experiencing high load. Please try again later.',
     })
-
-    // TODO: add rateLimits
 
     res.json({ available: !(await db.collection("users").findOne({ username })) })
 })
@@ -38,8 +43,6 @@ router.post('/api/registered-email', async (req, res) => {
         error: 'Service Unavailable',
         message: 'We experiencing high load. Please try again later.',
     })
-
-    // TODO: add rateLimits
 
     res.json({ registered: !!(await db.collection("secrets").findOne({ email: { address: email } })) })
 })
