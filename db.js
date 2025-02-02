@@ -12,7 +12,7 @@ client.connect().then(() => {
 }).catch(err => {
     console.log("FATAL: MongoDB shat")
     console.log(err)
-    exit(1) // HARD EXIT CAUSE DB IS MANDATORY
+    process.exit(1) // HARD EXIT CAUSE DB IS MANDATORY
 })
 
 module.exports = db
