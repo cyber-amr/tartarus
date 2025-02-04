@@ -2,6 +2,7 @@ const router = require('express').Router()
 const path = require('path')
 const { rateLimit } = require('express-rate-limit')
 const db = require("./db.js")
+const { createUser } = require('./userer.js')
 
 // Static page routes
 router.get('/', (req, res) => res.sendFile(path.join(__dirname, 'html', 'index.html')))
