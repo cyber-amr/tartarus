@@ -4,6 +4,7 @@ const { rateLimit } = require('express-rate-limit')
 const db = require("./db.js")
 const { createUser } = require('./userer.js')
 
+const isStr = (x) => x && typeof x === "string"
 const getIP = (req) => req.headers['x-forwarded-for'] ?? req.ip
 
 // Static page routes
