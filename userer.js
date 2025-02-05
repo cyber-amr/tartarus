@@ -14,7 +14,8 @@ class User {
     }
 
     static async get(query) {
-        return new User(await db.collection("users").findOne(query))
+        const data = await db.collection("users").findOne(query)
+        return data ? new User(data) : null
     }
 
     async update(data) {
