@@ -67,20 +67,15 @@ async function createUser(data, ip) {
     if (q.has(username) || !!(await db.collection("users").findOne({ username }))) return { errorCode: 409, error: 'username already in use, try another' }
     q.add(username)
 
-    if (q.has(email) || !!(await db.collection("secrets").findOne({ email: { address: email } }))) return { errorCode: 409, error: 'email already registered, try logging-in' }
+    if (q.has(email) || !!(await db.collection("secrets").findOne({ email: { address: email } }))) {
+        q.delete(username)
+        return { errorCode: 409, error: 'email already registered, try logging-in' }
+    }
     q.add(email)
 
     const _id = userSnowflaker.nextId()
     const hashedPassword = hash(_id + rawPassword + process.env.SECRET_SALT ?? "")
 
-    console.log({
-        _id,
-        username,
-        createDate: new Date(),
-        birthDate,
-        lastActive: new Date(),
-        displayName: displayName ?? "",
-    })
     const status = await db.collection("users").insertOne({
         _id,
         username,
@@ -88,23 +83,18 @@ async function createUser(data, ip) {
         birthDate,
         lastActive: new Date(),
         displayName: displayName ?? "",
-    })
-    q.delete(username)
+    }).finally(() => q.delete(username))
     if (!status.acknowledged) return { errorCode: 500, error: "MongoDB error, could not insert new user data" }
 
-    console.log({
-        _id,
-        email: { address: email, isVerified: false },
-        password: { hash: hashedPassword, lastUpdate: new Date(), oldPasswords: [] },
-        loginIPs: [ip]
-    })
     const secretStatus = await db.collection("secrets").insertOne({
         _id,
         email: { address: email, isVerified: false },
         password: { hash: hashedPassword, lastUpdate: new Date(), oldPasswords: [] },
         loginIPs: [ip]
-    })
-    q.delete(email)
+    }).catch(() => {
+        db.collection('users').deleteOne({ _id })
+        db.collection('secrets').deleteOne({ _id })
+    }).finally(() => q.delete(email))
     if (!secretStatus.acknowledged) {
         db.collection('users').deleteOne({ _id })
         return { errorCode: 500, error: 'MongoDB error, could not insert new user secret data' }
