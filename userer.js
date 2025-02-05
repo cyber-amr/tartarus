@@ -45,7 +45,7 @@ class SecretUser {
 const q = new Set()
 async function createUser(data, ip) {
     const username = data.username
-    if (!username || typeof username !== "string" || username.length > 16 || !/^[A-Za-z0-9_]+$/.test(username))
+    if (!username || typeof username !== "string" || !/^[A-Za-z0-9_]{1,16}$/.test(username))
         return { error: 'username is required, max 16 characters of A-z, 0-9 and _ only' }
 
     const email = data.email
