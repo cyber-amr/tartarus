@@ -4,6 +4,8 @@ const { rateLimit } = require('express-rate-limit')
 const db = require("./db.js")
 const { createUser } = require('./userer.js')
 
+const getIP = (req) => req.headers['x-forwarded-for'] ?? req.ip
+
 // Static page routes
 router.get('/', (req, res) => res.sendFile(path.join(__dirname, 'html', 'index.html')))
 
@@ -11,7 +13,7 @@ router.get('/', (req, res) => res.sendFile(path.join(__dirname, 'html', 'index.h
 router.get('/signup', (req, res) => res.sendFile(path.join(__dirname, 'html', 'signup.html')))
 router.post('/signup', async (req, res) => {
     if (!req.body) return res.status(400).json({ error: "request body is empty" })
-    const { error, errorCode, _id } = await createUser(req.body, req.headers['x-forwarded-for'] ?? req.ip)
+    const { error, errorCode, _id } = await createUser(req.body, getIP(req))
     if (error) return res.status(errorCode ?? 400).json({ error })
 
     res.status(201).set('Location', `/api/users/${_id}`)
@@ -19,7 +21,7 @@ router.post('/signup', async (req, res) => {
 
 // API routes
 router.use('/api', rateLimit({
-    keyGenerator: (req) => req.headers['x-forwarded-for'] ?? req.ip,
+    keyGenerator: (req) => getIP(req),
     limit: 15,
     windowMs: 30 * 1000
 }))
