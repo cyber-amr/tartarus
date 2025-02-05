@@ -185,9 +185,8 @@
   </div>
 
   <script>
-    let currentDate = new Date()
     const minDate = new Date('1919-01-01')
-    const maxDate = (new Date(currentDate.setFullYear(currentDate.getFullYear() - 13)))
+    const maxDate = new Date(Date.now() - 13 * 365 * 24 * 60 * 60 * 1000)
     document.getElementById("birthDate").max = maxDate.toISOString().split("T")[0]
 
     const validationState = {
