@@ -12,7 +12,7 @@ router.get('/', (req, res) => res.sendFile(path.join(__dirname, 'html', 'index.h
 
 // Auth routes
 router.get('/signup', (req, res) => res.sendFile(path.join(__dirname, 'html', 'signup.html')))
-router.post('/signup', async (req, res) => {
+router.post('/signup', rateLimit({ keyGenerator: req => getIP(req), limit: 1, windowMs: 300 * 1000, skipFailedRequests: true }), async (req, res) => {
     if (!req.body) return res.status(400).json({ error: "request body is empty" })
     const { error, errorCode, _id } = await createUser(req.body, getIP(req))
     if (error) return res.status(errorCode ?? 400).json({ error })
