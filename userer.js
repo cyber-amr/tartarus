@@ -33,7 +33,8 @@ class SecretUser {
     }
 
     static async get(query) {
-        return new User(await db.collection("secrets").findOne(query))
+        const data = await db.collection("secrets").findOne(query)
+        return data ? new User(data) : null
     }
 
     async update(data) {
