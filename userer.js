@@ -1,6 +1,7 @@
 const db = require("./db.js")
 const { userSnowflaker } = require("./snowflaker.js")
 const { hash } = require("./hasher.js")
+const { createSession } = require("./sessioner.js")
 
 class User {
     constructor(data) {
@@ -78,28 +79,28 @@ async function createUser(data, ip) {
     const _id = userSnowflaker.nextId()
     const hashedPassword = hash(_id + rawPassword + process.env.SECRET_SALT ?? "")
 
-    const status = await db.collection("users").insertOne({
-        _id,
-        username,
-        createDate: new Date(),
-        birthDate,
-        lastActive: new Date(),
-        displayName: displayName ?? "",
-    }).finally(() => q.delete(username))
-    if (!status.acknowledged) return { errorCode: 500, error: "MongoDB error, could not insert new user data" }
-
-    const secretStatus = await db.collection("secrets").insertOne({
-        _id,
-        email: { address: email, isVerified: false },
-        password: { hash: hashedPassword, lastUpdate: new Date(), oldPasswords: [] },
-        loginIPs: [ip]
-    }).catch(() => {
+    try {
+        await db.collection("users").insertOne({
+            _id,
+            username,
+            createDate: new Date(),
+            birthDate,
+            lastActive: new Date(),
+            displayName: displayName ?? "",
+        })
+        await db.collection("secrets").insertOne({
+            _id,
+            email: { address: email, isVerified: false },
+            password: { hash: hashedPassword, lastUpdate: new Date(), oldPasswords: [] },
+            loginIPs: [ip]
+        })
+    } catch (error) {
         db.collection('users').deleteOne({ _id })
         db.collection('secrets').deleteOne({ _id })
-    }).finally(() => q.delete(email))
-    if (!secretStatus.acknowledged) {
-        db.collection('users').deleteOne({ _id })
-        return { errorCode: 500, error: 'MongoDB error, could not insert new user secret data' }
+        return { errorCode: 500, error }
+    } finally {
+        q.delete(username)
+        q.delete(email)
     }
 
     return { _id }
