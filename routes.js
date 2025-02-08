@@ -87,6 +87,12 @@ router.post('/api/registered-email', async (req, res) => {
     res.json({ registered: !!(await db.collection("secrets").findOne({ 'email.address': email })) })
 })
 
+router.use('/private-api', sessionParser({ required: true }), rateLimit({
+    keyGenerator: (req) => req.session.userId,
+    limit: 15,
+    windowMs: 30 * 1000
+}))
+
 // Error handling middleware
 router.use((err, req, res, next) => {
     console.error(err.stack);
