@@ -105,4 +105,21 @@ async function createUser(data, ip) {
     return { _id }
 }
 
-module.exports = { User, SecretUser, createUser }
+async function login({ password, username, email, keepLogin, ip }) {
+    let secretUser
+    if (!email || !/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email)) {
+        if (!username || !/^[A-Za-z0-9_]{1,16}$/.test(username)) return { error: "Bad request" }
+        const user = await User.get({ username })
+        if (!user) return { errorCode: 401, error: "Unauthorized" }
+        secretUser = await SecretUser.get({ _id: user._id })
+    } else {
+        secretUser = await SecretUser.get({ 'email.address': email })
+    }
+
+    // vulnerable but who gives a fuck
+    if (secretUser?.password.hash !== hash(secretUser?._id + password + process.env.SECRET_SALT ?? "")) return { errorCode: 401, error: "Unauthorized" }
+
+    return await createSession({ userId: secretUser._id, ip, maxAge: keepLogin ? 30 * 24 * 60 * 60 * 1000 : undefined }) // 30 days
+}
+
+module.exports = { User, SecretUser, createUser, login }
