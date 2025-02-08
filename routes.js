@@ -17,7 +17,7 @@ router.post('/signup', rateLimit({ keyGenerator: req => getIP(req), limit: 1, wi
     const { error, errorCode, _id } = await createUser(req.body, getIP(req))
     if (error) return res.status(errorCode ?? 400).json({ error })
 
-    res.status(201).set('Location', `/api/users/${_id}`)
+    res.status(201).redirect("/login" )
 })
 
 // API routes
