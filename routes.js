@@ -48,7 +48,7 @@ router.post('/api/registered-email', async (req, res) => {
         message: 'We experiencing high load. Please try again later.',
     })
 
-    res.json({ registered: !!(await db.collection("secrets").findOne({ email: { address: email } })) })
+    res.json({ registered: !!(await db.collection("secrets").findOne({ 'email.address': email })) })
 })
 
 // Error handling middleware
