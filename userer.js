@@ -28,9 +28,8 @@ class SecretUser {
     constructor(data) {
         this._id = data._id
         this.email = data.email
-        this.isEmailVerified = data.isEmailVerified
-        this.hashedPassword = data.hashedPassword
-        this.signupIP = data.signupIP
+        this.password = data.password
+        this.loginIPs = data.loginIPs
     }
 
     static async get(query) {
