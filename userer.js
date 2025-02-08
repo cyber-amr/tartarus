@@ -35,7 +35,7 @@ class SecretUser {
 
     static async get(query) {
         const data = await db.collection("secrets").findOne(query)
-        return data ? new User(data) : null
+        return data ? new SecretUser(data) : null
     }
 
     async update(data) {
