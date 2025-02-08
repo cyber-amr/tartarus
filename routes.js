@@ -20,6 +20,31 @@ router.post('/signup', rateLimit({ keyGenerator: req => getIP(req), limit: 1, wi
     res.status(201).redirect("/login" )
 })
 
+router.get('/login', sessionParser(), (req, res) => {
+    if (req.session) return res.redirect(302, "/")
+    res.sendFile(path.join(__dirname, 'html', 'login.html'))
+})
+router.post('/login', rateLimit({ keyGenerator: req => getIP(req), limit: 5, windowMs: 30 * 1000 }), sessionParser(), async (req, res) => {
+    if (req.session) return res.status(403).json({ error: "Already logged in" })
+    const password = req.body?.password
+    const username = req.body?.username
+    const email = req.body?.email
+    const keepLogin = req.body?.keepMeLoggedIn
+    if (!isStr(password) || (!isStr(username) && !isStr(email))) return res.status(400).json({ error: "Bad request" })
+
+    const { errorCode, error, _id, expireDate } = await login({ password, username, email, keepLogin, ip: getIP(req) })
+    if (error) return res.status(errorCode ?? 400).json({ error })
+
+    res.cookie('sessionId', _id, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV !== 'development',
+        sameSite: "strict",
+        path: '/',
+        expires: expireDate
+    })
+    return res.status(201).redirect('/')
+})
+
 // API routes
 router.use('/api', rateLimit({
     keyGenerator: (req) => getIP(req),
