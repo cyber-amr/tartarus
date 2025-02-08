@@ -53,7 +53,7 @@ router.post('/login', rateLimit({ keyGenerator: req => getIP(req), limit: 5, win
 router.get('/logout', sessionParser({ required: true }), (req, res) => res.sendFile(path.join(__dirname, 'html', 'logout.html')))
 router.post('/logout', sessionParser({ required: true }), async (req, res) => {
     req.session.destroy(res)
-    res.redirect('/login')
+    res.status(200).redirect('/login')
 })
 
 // API routes
