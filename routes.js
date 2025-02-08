@@ -2,7 +2,7 @@ const router = require('express').Router()
 const path = require('path')
 const { rateLimit } = require('express-rate-limit')
 const db = require("./db.js")
-const { createUser, login } = require('./userer.js')
+const { createUser, login, User } = require('./userer.js')
 const { sessionParser } = require('./sessioner.js')
 
 const isStr = (x) => x && typeof x === "string"
@@ -92,6 +92,11 @@ router.use('/private-api', sessionParser({ touch: true, required: true }), rateL
     limit: 15,
     windowMs: 30 * 1000
 }))
+
+router.get('/private-api/user', async (req, res) => {
+    const user = await User.get({ _id: req.session.userId }).catch(error => res.status(500).json({ error }))
+    res.status(200).json(user)
+})
 
 router.get('/private-api/session', (req, res) => {
     res.status(200).send({
