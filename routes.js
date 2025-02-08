@@ -67,22 +67,12 @@ router.post('/api/available-username', async (req, res) => {
     const username = req.body?.username
     if (!username) return res.status(400).json({ error: 'username is required' })
 
-    if (!db.ready) return res.status(503).json({
-        error: 'Service Unavailable',
-        message: 'We experiencing high load. Please try again later.',
-    })
-
     res.json({ available: !(await db.collection("users").findOne({ username })) })
 })
 
 router.post('/api/registered-email', async (req, res) => {
     const email = req.body?.email
     if (!email) return res.status(400).json({ error: 'email is required' })
-
-    if (!db.ready) return res.status(503).json({
-        error: 'Service Unavailable',
-        message: 'We experiencing high load. Please try again later.',
-    })
 
     res.json({ registered: !!(await db.collection("secrets").findOne({ 'email.address': email })) })
 })
