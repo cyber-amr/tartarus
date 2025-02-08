@@ -93,6 +93,10 @@ router.use('/private-api', sessionParser({ required: true }), rateLimit({
     windowMs: 30 * 1000
 }))
 
+router.get('/private-api/session/create-date', (req, res) => {
+    res.status(200).send(req.session.createDate)
+})
+
 // Error handling middleware
 router.use((err, req, res, next) => {
     console.error(err.stack);
