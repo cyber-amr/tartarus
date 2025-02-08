@@ -70,7 +70,7 @@ async function createUser(data, ip) {
     if (q.has(username) || !!(await db.collection("users").findOne({ username }))) return { errorCode: 409, error: 'username already in use, try another' }
     q.add(username)
 
-    if (q.has(email) || !!(await db.collection("secrets").findOne({ email: { address: email } }))) {
+    if (q.has(email) || !!(await db.collection("secrets").findOne({ 'email.address': email }))) {
         q.delete(username)
         return { errorCode: 409, error: 'email already registered, try logging-in' }
     }
