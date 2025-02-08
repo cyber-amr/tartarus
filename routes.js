@@ -93,6 +93,15 @@ router.use('/private-api', sessionParser({ touch: true, required: true }), rateL
     windowMs: 30 * 1000
 }))
 
+router.get('/private-api/session', (req, res) => {
+    res.status(200).send({
+        userId: req.session.userId,
+        createDate: req.session.createDate,
+        lastActive: req.session.lastActive,
+        expireDate: req.session.expireDate
+    })
+})
+
 // Error handling middleware
 router.use((err, req, res, next) => {
     console.error(err.stack);
