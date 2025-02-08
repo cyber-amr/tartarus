@@ -74,7 +74,7 @@ function sessionParser({ touch = false, required = false } = {}) {
             req.session.destroy(res)
             req.session = null
         }
-        if (!req.session) return required ? res.status(401).json({ error: 'not logged in' }) : next()
+        if (!req.session) return required ? res.status(401).redirect('/login') : next()
 
         if (touch) {
             const { acknowledged, newExpireDate } = req.session.touch()
