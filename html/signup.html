@@ -413,8 +413,7 @@
           if (res.ok) {
             window.location.href = '/login'
           } else {
-            const e_res = await res.json()
-            throw new Error(`(${res.status}) ${e_res.error ?? "Signup failed"}`)
+            throw new Error(`(${res.status}) ${(await res.json().catch(() => { }))?.error ?? "Signup failed"}`)
           }
         })
         .catch(err => {
