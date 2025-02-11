@@ -20,7 +20,7 @@ app.use(express.json())
 app.use(routes)
 
 app.listen(PORT, () => {
-	console.log(`Listening at http://localhost:${PORT}`)
+	console.log(`Web server running at http://localhost:${PORT}`)
 })
 
 process.on("unhandledRejection", (r, p) => console.error(r, p))
