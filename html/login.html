@@ -69,6 +69,11 @@
       box-sizing: border-box;
     }
 
+    input:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+    }
+
     input:focus {
       outline: none;
       border-color: #6faaf6;
@@ -188,7 +193,7 @@
     <div class="prompt">$ ./login --enter-tartarus</div>
     <form id="loginForm" action="/login" method="POST">
       <div class="input-group">
-        <label for="identifier">username:~$</label>
+        <label id="identifierLabel" for="identifier">username:~$</label>
         <input type="username" id="identifier" name="identifier" required>
         <div class="status" id="identifierStatus">Enter username or email</div>
       </div>
@@ -210,6 +215,10 @@
   </div>
 
   <script>
+    const params = new URLSearchParams(window.location.search)
+    const emailParam = params.get('email')
+    const usernameParam = params.get('username')
+
     const submitButton = document.getElementById('submitButton')
     const identifier = document.getElementById('identifier')
     const password = document.getElementById('password')
@@ -220,6 +229,29 @@
       email: false,
       pass: false
     }
+
+    if (emailParam) {
+      document.getElementById('identifierLabel').textContent = 'email:~$'
+      const link = document.createElement('a')
+      link.textContent = 'another account?'
+      link.href = '/login'
+      document.getElementById('identifierStatus').textContent = ''
+      document.getElementById('identifierStatus').appendChild(link)
+
+      identifier.value = emailParam
+      identifier.disabled = true
+      password.focus()
+    } else if (usernameParam) {
+      const link = document.createElement('a')
+      link.textContent = 'another account?'
+      link.href = '/login'
+      document.getElementById('identifierStatus').textContent = ''
+      document.getElementById('identifierStatus').appendChild(link)
+
+      identifier.value = usernameParam
+      identifier.disabled = true
+      password.focus()
+    } else identifier.focus()
 
     setInterval(() => {
       valid.username = /^[A-Za-z0-9_]{1,16}$/.test(identifier.value)
