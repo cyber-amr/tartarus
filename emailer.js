@@ -156,6 +156,7 @@ module.exports.sendVerificationEmail = async (email, reason) => {
 
         await send({ to: email, subject: "Email Verification", body })
     } catch (error) {
+        console.error(error)
         return {
             errorCode: error.$metadata?.httpStatusCode ?? 500,
             error: 'Failed to send verification email'
