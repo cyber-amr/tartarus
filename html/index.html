@@ -74,6 +74,17 @@
       animation: blink 0.5s step-start 0s infinite;
     }
 
+    .image-container {
+      text-align: center;
+      margin: 2rem 0;
+    }
+
+    .image {
+      max-width: 300px;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
     @keyframes blink {
       50% {
         opacity: 0;
@@ -135,11 +146,14 @@
     <div class="output">[INFO] Building new features and experiences</div>
     <div class="error">[NOTICE] Site under construction</div>
     <div>Checking system status...</div>
+    <div class="image-container">
+      <img src="/assets/images/underconstruction.png" alt="Underconstruction Image" class="image">
+    </div>
     <div class="progress">
       <div class="progress-bar"></div>
     </div>
     <div class="command">
-      Estimated completion (Soon™): 2025-2-15
+      Estimated launch date (Soon™): 2025 March
     </div>
   </div>
 </body>
