@@ -19,8 +19,34 @@ router.get('/signup', sessionParser(), (req, res) => {
 router.post('/signup', rateLimit({ keyGenerator: req => getIP(req), limit: 1, windowMs: 300 * 1000, skipFailedRequests: true }), sessionParser(), async (req, res) => {
     if (req.session) return res.status(403).json({ error: "Already logged in" })
     if (!req.body) return res.status(400).json({ error: "request body is empty" })
-    const { error, errorCode } = await createUser(req.body, getIP(req))
+
+    const email = req.body.email
+    if (!isStr(email)) return res.status(400).json({ error: 'email is required' })
+    if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email)) return res.status(400).json({ error: 'Unsupported email format' })
+
+    const token = req.body.token
+    if (!isStr(token) || !(await isValidVerification(email, token))) return res.status(403).json({ error: 'Invalid verification code', redirect: '/signup?status=expired' })
+
+    const username = req.body.username
+    if (!isStr(username) || !/^[A-Za-z0-9_]{1,16}$/.test(username)) return res.status(400).json({ error: 'username is required, max 16 characters of A-z, 0-9 and _ only' })
+
+    const password = req.body.password
+    if (!isStr(password) || !/^(?=.*[a-zA-Z])(?=.*\d)(?=.*[^a-zA-Z0-9]).{8,32}$/.test(password))
+        return res.status(400).json({ error: 'password is required, 8-32 length and must have a letter, a numbers and a special character' })
+
+    const birthDate = new Date(req.body.birthDate)
+    const [minDate, maxDate] = [new Date('1919-01-01'), new Date(Date.now() - 13 * 365 * 24 * 60 * 60 * 1000)] // 13 years before
+    if (isNaN(birthDate) || minDate.getTime() > birthDate.getTime() || maxDate.getTime() < birthDate.getTime())
+        return res.status(400).json({ error: 'birthDate is required, +13y age' })
+
+    const displayName = req.body.displayName
+    if (displayName && (typeof displayName !== 'string' || displayName.length > 16))
+        return res.status(400).json({ error: 'displayName cannot exceed 16 characters' })
+
+    const { error, errorCode } = await createUser({ username, email, password, birthDate, displayName }, getIP(req))
     if (error) return res.status(errorCode ?? 400).json({ error })
+
+    destroyVerification(email, { token })
 
     res.status(201).redirect("/login")
 })

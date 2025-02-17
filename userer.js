@@ -43,29 +43,7 @@ class SecretUser {
 }
 
 const q = new Set()
-async function createUser(data, ip) {
-    const username = data.username
-    if (!username || typeof username !== "string" || !/^[A-Za-z0-9_]{1,16}$/.test(username))
-        return { error: 'username is required, max 16 characters of A-z, 0-9 and _ only' }
-
-    const email = data.email
-    if (!email || typeof email !== "string") return { error: 'email is required' }
-    if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email)) return { error: 'Unsupported email format' }
-
-    const rawPassword = data.password
-    if (!rawPassword || typeof rawPassword !== "string" || !/^(?=.*[a-zA-Z])(?=.*\d)(?=.*[^a-zA-Z0-9]).{8,32}$/.test(rawPassword))
-        return { error: 'password is required, 8-32 length and must have a letter, a numbers and a special character' }
-
-    const currentDate = new Date()
-    const birthDate = new Date(data.birthDate)
-    const maxDate = (new Date(currentDate.setFullYear(currentDate.getFullYear() - 13)))
-    if (!birthDate || !(birthDate instanceof Date) || !((new Date('1919-01-01')).getTime() < birthDate.getTime() && birthDate.getTime() <= maxDate.getTime()))
-        return { error: 'birthDate is required, +13y age' }
-
-    const displayName = data.displayName
-    if (displayName && (typeof displayName !== 'string' || displayName.length > 16))
-        return { error: 'displayName cannot exceed 16 characters' }
-
+async function createUser({ username, email, password, birthDate, displayName }, ip) {
     if (q.has(username) || !!(await db.collection("users").findOne({ username }))) return { errorCode: 409, error: 'username already in use, try another' }
     q.add(username)
 
@@ -76,7 +54,7 @@ async function createUser(data, ip) {
     q.add(email)
 
     const _id = userSnowflaker.nextId()
-    const hashedPassword = hash(_id + rawPassword + process.env.SECRET_SALT ?? "")
+    const hashedPassword = hash(_id + password + process.env.SECRET_SALT ?? "")
 
     try {
         await db.collection("users").insertOne({
