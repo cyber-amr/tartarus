@@ -230,7 +230,7 @@
       pass: false
     }
 
-    if (/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(emailParam)) {
+    if (emailParam && /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(emailParam)) {
       document.getElementById('identifierLabel').textContent = 'email:~$'
       const link = document.createElement('a')
       link.textContent = 'another account?'
@@ -243,7 +243,7 @@
       valid.email = true
       valid.username = false
       password.focus()
-    } else if (/^[A-Za-z0-9_]{1,16}$/.test(usernameParam)) {
+    } else if (usernameParam && /^[A-Za-z0-9_]{1,16}$/.test(usernameParam)) {
       const link = document.createElement('a')
       link.textContent = 'another account?'
       link.href = '/login'
