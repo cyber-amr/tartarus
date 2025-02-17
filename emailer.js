@@ -1,4 +1,4 @@
-const SIGNABLE_PROVIDERS = []
+const SIGNABLE_PROVIDERS = ['gmail.com']
 const VERIFICATION_SPAN = 30 * 60 * 1000 // (30min) in ms
 const VERIFICATION_REFRESH_AFTER = 1 * 60 * 1000 // (5min) in ms
 const VERIFICATION_EMAIL_BODY = `Welcome to Tartarus,
