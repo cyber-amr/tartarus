@@ -128,6 +128,22 @@ router.post('/api/request-verification-email', sessionParser(), rateLimit({
     res.status(202).json({ sent })
 })
 
+router.post('/api/valid-email-verification', sessionParser(), rateLimit({
+    keyGenerator: (req) => req.body?.email ?? getIP(req),
+    skipSuccessfulRequests: true,
+    limit: 3,
+    windowMs: 30 * 60 * 1000,
+}), (req, res) => {
+    if (req.session) return res.status(403).json({ error: 'Unauthorized' })
+
+    const email = req.body?.email
+    const token = req.body?.token
+
+    if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email) || !/^[A-F0-9]+$/.test(token)) return res.status(400).json({ error: 'email and token are required' })
+
+    isValidVerification(email, token.toUpperCase()).then(isValid => res.status(200).json({ isValid }))
+})
+
 router.use('/private-api', sessionParser({ touch: true, required: true }), rateLimit({
     keyGenerator: (req) => req.session.userId,
     limit: 15,
