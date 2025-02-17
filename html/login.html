@@ -230,7 +230,7 @@
       pass: false
     }
 
-    if (emailParam) {
+    if (/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(emailParam)) {
       document.getElementById('identifierLabel').textContent = 'email:~$'
       const link = document.createElement('a')
       link.textContent = 'another account?'
@@ -240,8 +240,10 @@
 
       identifier.value = emailParam
       identifier.disabled = true
+      valid.email = true
+      valid.username = false
       password.focus()
-    } else if (usernameParam) {
+    } else if (/^[A-Za-z0-9_]{1,16}$/.test(usernameParam)) {
       const link = document.createElement('a')
       link.textContent = 'another account?'
       link.href = '/login'
@@ -250,6 +252,8 @@
 
       identifier.value = usernameParam
       identifier.disabled = true
+      valid.username = true
+      valid.email = false
       password.focus()
     } else identifier.focus()
 
@@ -266,8 +270,8 @@
       const formData = new FormData(e.target)
 
       const data = {
-        username: valid.username ? formData.get('identifier') : undefined,
-        email: valid.email ? formData.get('identifier') : undefined,
+        username: valid.username ? formData.get('identifier') ?? usernameParam : undefined,
+        email: valid.email ? formData.get('identifier') ?? emailParam : undefined,
         password: formData.get('password'),
         keepMeLoggedIn: formData.get('keepMeLoggedIn') === 'on'
       }
