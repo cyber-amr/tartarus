@@ -69,6 +69,11 @@
       box-sizing: border-box;
     }
 
+    input:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+    }
+
     input:focus {
       outline: none;
       border-color: #6faaf6;
@@ -123,10 +128,6 @@
       opacity: 0.7;
     }
 
-    button:disabled:hover {
-      background-color: #393f69;
-    }
-
     .cursor {
       animation: blink 0.5s step-start 0s infinite;
     }
@@ -141,22 +142,107 @@
       color: #666699;
       font-size: 0.8em;
     }
+
+    .progress-steps {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 2rem;
+      position: relative;
+    }
+
+    .step {
+      flex: 1;
+      text-align: center;
+      color: #393f69;
+      position: relative;
+      padding: 0.5rem;
+    }
+
+    .step.active {
+      color: #6faaf6;
+    }
+
+    .step.completed {
+      color: #9ece6e;
+    }
+
+    .step-line {
+      position: absolute;
+      top: 50%;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: #393f69;
+      z-index: 0;
+    }
+
+    .step-content {
+      position: relative;
+      z-index: 1;
+      background: #24283b;
+      padding: 0 0.5rem;
+    }
+
+    .form-step {
+      display: none;
+    }
+
+    .form-step.active {
+      display: block;
+    }
   </style>
 </head>
 
 <body>
   <div class="signup-container">
-    <div class="prompt">$ ./signup --new-user</div>
-    <form id="signupForm" action="/signup" method="POST">
+    <div class="prompt" id="prompt">$ ./signup --new-user</div>
+    <div class="progress-steps">
+      <div class="step-line"></div>
+      <div class="step" id="step1">
+        <div class="step-content">Email</div>
+      </div>
+      <div class="step" id="step2">
+        <div class="step-content">Verify</div>
+      </div>
+      <div class="step" id="step3">
+        <div class="step-content">Details</div>
+      </div>
+    </div>
+
+    <form id="emailForm" class="form-step">
+      <div class="input-group">
+        <label for="initialEmail">email:~$</label>
+        <input type="email" id="initialEmail" name="email" required>
+        <div class="status" id="initialEmailStatus"></div>
+      </div>
+      <div>Have an account? <a href="/login">login</a> instead</div>
+      <button type="submit" id="emailSubmitButton" disabled>NEXT <span class="cursor">█</span></button>
+    </form>
+
+    <form id="verificationForm" class="form-step">
+      <div class="input-group">
+        <label for="unverifiedEmail">email:~$</label>
+        <input type="email" id="unverifiedEmail" name="unverifiedEmail" required disabled>
+        <div class="status success" id="unverifiedEmailStatus">✓</div>
+      </div>
+      <div class="input-group">
+        <label for="token">verification_code:~$</label>
+        <input type="text" id="token" name="token" required>
+        <div class="status" id="tokenStatus"></div>
+      </div>
+      <button type="submit" id="verifyButton" disabled>NEXT <span class="cursor">█</span></button>
+    </form>
+
+    <form id="signupForm" class="form-step">
+      <div class="input-group">
+        <label for="verifiedEmail">email:~$</label>
+        <input type="email" id="verifiedEmail" name="verifiedEmail" required disabled>
+        <div class="status success" id="verifiedEmailStatus">✓</div>
+      </div>
       <div class="input-group">
         <label for="username">username:~$</label>
         <input type="text" id="username" name="username" required>
         <div class="status" id="usernameStatus"></div>
-      </div>
-      <div class="input-group">
-        <label for="email">email:~$</label>
-        <input type="email" id="email" name="email" required>
-        <div class="status" id="emailStatus"></div>
       </div>
       <div class="input-group">
         <label for="password">password:~$</label>
@@ -178,247 +264,356 @@
         <input type="text" id="displayName" name="displayName">
         <div class="status" id="displayNameStatus"></div>
       </div>
-      <div>Have an account? <a href="/login">login</a> instead</div>
       <button type="submit" id="submitButton" disabled>CREATE ACCOUNT <span class="cursor">█</span></button>
     </form>
   </div>
 
   <script>
-    const minDate = new Date('1919-01-01')
-    const maxDate = new Date(Date.now() - 13 * 365 * 24 * 60 * 60 * 1000)
-    document.getElementById("birthDate").max = maxDate.toISOString().split("T")[0]
+    const params = new URLSearchParams(window.location.search)
+    const emailParam = params.get('email')
+    const tokenParam = params.get('token')
 
-    const validationState = {
-      username: false,
-      email: false,
-      password: false,
-      confirmPassword: false,
-      birthDate: false,
-      displayName: true
-    }
+    if (!emailParam) {
+      // first step enter email then redirect to signup/?email=<email>
+      document.getElementById('emailForm').classList.add('active')
+      document.getElementById('step1').classList.add('active')
+      document.getElementById('prompt').textContent = "$ ./signup --check-email"
 
-    const submitButton = document.getElementById('submitButton')
-    setInterval(() => submitButton.disabled = !Object.values(validationState).every(v => v === true), 100)
-
-    let usernameTimer
-    let emailTimer
-
-    document.getElementById('username').addEventListener('input', (e) => {
-      const username = e.target.value
-      const status = document.getElementById('usernameStatus')
-      validationState.username = false
-      if (!username.length) {
-        status.textContent = ""
-        status.className = 'status'
-        return
-      }
-      if (username.length > 16) {
-        status.textContent = "max 16 characters ✗"
+      if (params.get('status') == 'expired') {
+        const status = document.getElementById('initialEmailStatus')
+        status.textContent = 'Expired Verification ✗'
         status.className = 'status error'
-        return
       }
-      if (!/^[A-Za-z0-9_]+$/.test(username)) {
-        status.textContent = "can only contain A-z, 0-9 and _ ✗"
-        status.className = 'status error'
-        return
-      }
-      status.textContent = 'Checking...'
-      status.className = 'status'
 
-      clearTimeout(usernameTimer)
-      usernameTimer = setTimeout(() => {
-        fetch('/api/available-username', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ username: username })
-        })
-          .then(res => res.json())
-          .then(data => {
-            if (e.target.value === username) {
-              if (data.available) {
-                status.textContent = 'Available ✓'
-                status.className = 'status success'
-                validationState.username = true
-              } else if (data.available === false) {
-                status.textContent = 'Taken ✗'
-                status.className = 'status error'
-              } else {
-                status.textContent = 'Error checking ✗'
-                status.className = 'status error'
-              }
-            }
-          })
-          .catch(() => {
-            if (e.target.value === username) {
-              status.textContent = 'Error checking ✗'
-              status.className = 'status error'
-            }
-          })
-      }, 1500)
-    })
+      let emailTimer
+      const initialEmailInput = document.getElementById('initialEmail')
+      const emailSubmitButton = document.getElementById('emailSubmitButton')
 
-    document.getElementById('email').addEventListener('input', (e) => {
-      const email = e.target.value
-      const status = document.getElementById('emailStatus')
-      validationState.email = false
-      if (!email.length) {
-        status.textContent = ""
+      initialEmailInput.focus()
+
+      initialEmailInput.addEventListener('input', (e) => {
+        const email = e.target.value
+        const status = document.getElementById('initialEmailStatus')
+        emailSubmitButton.disabled = true
+
+        if (!email.length) {
+          status.textContent = ""
+          status.className = 'status'
+          return
+        }
+
+        if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email)) return
+
+        status.textContent = 'Checking...'
         status.className = 'status'
-        return
-      }
-      if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email)) return
-      status.textContent = 'Checking...'
-      status.className = 'status'
+        emailSubmitButton.childNodes[0].nodeValue = 'NEXT '
 
-      clearTimeout(emailTimer)
-      emailTimer = setTimeout(() => {
-        fetch('/api/registered-email', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email: email })
-        })
-          .then(res => res.json())
-          .then(data => {
-            if (e.target.value === email) {
-              if (data.registered) {
-                status.textContent = 'Already registered ✗'
-                status.className = 'status error'
-                if (confirm('This email is already registered. Would you like to log in?')) {
-                  window.location.href = '/login'
+        clearTimeout(emailTimer)
+        emailTimer = setTimeout(() => {
+          fetch('/api/registered-email', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email })
+          })
+            .then(res => res.json())
+            .then(data => {
+              if (e.target.value === email) {
+                if (data.registered) {
+                  status.textContent = 'Already registered'
+                  status.className = 'status'
+                  emailSubmitButton.childNodes[0].nodeValue = 'LOGIN '
+                  emailSubmitButton.disabled = false
+                } else {
+                  status.textContent = '✓'
+                  status.className = 'status success'
+                  emailSubmitButton.childNodes[0].nodeValue = 'NEXT '
+                  emailSubmitButton.disabled = false
                 }
-              } else if (data.registered === false) {
-                status.textContent = '✓'
-                status.className = 'status success'
-                validationState.email = true
-              } else {
+              }
+            })
+            .catch(() => {
+              if (e.target.value === email) {
                 status.textContent = 'Error checking ✗'
                 status.className = 'status error'
               }
-            } else {
-              status.textContent = ''
-              status.className = 'status'
-            }
-          })
-          .catch(() => {
-            if (e.target.value === email) {
-              status.textContent = 'Error checking ✗'
-              status.className = 'status error'
-            }
-          })
-      }, 3000)
-    })
+            })
+        }, 1500)
+      })
 
-    document.getElementById("password").addEventListener('input', (e) => {
-      const password = e.target.value
-      const status = document.getElementById('passwordStatus')
-      validationState.password = false
-      validationState.confirmPassword = false
+      document.getElementById('emailForm').addEventListener('submit', (e) => {
+        e.preventDefault()
+        const email = initialEmailInput.value
+        const status = document.getElementById('initialEmailStatus')
 
-      if (!password.length) {
-        status.textContent = ""
-        status.className = 'status'
-      } else if (!/[a-zA-Z]+/.test(password)) {
-        status.textContent = 'must have a letter ✗'
-        status.className = 'status error'
-      } else if (!/\d+/.test(password)) {
-        status.textContent = 'must have a number ✗'
-        status.className = 'status error'
-      } else if (!/[^a-zA-Z0-9]+/.test(password)) {
-        status.textContent = 'must have a special character ✗'
-        status.className = 'status error'
-      } else if (!/^(?=.*[a-zA-Z])(?=.*\d)(?=.*[^a-zA-Z0-9]).{8,32}$/.test(password)) {
-        status.textContent = 'must be between 8-32 characters ✗'
-        status.className = 'status error'
-      } else {
-        status.textContent = '✓'
-        status.className = 'status success'
-        validationState.password = true
-      }
+        if (status.textContent == 'Already registered') {
+          window.location.href = `/login?email=${encodeURIComponent(email)}`
+          return
+        }
 
-      document.getElementById("confirmPassword").dispatchEvent(new Event('input', { bubbles: true }))
-    })
+        fetch('/api/request-verification-email', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email })
+        }).then(res => res.json()).then(data => {
+          if (data.sent) {
+            window.location.href = `/signup?email=${encodeURIComponent(email)}`
+          } else {
+            status.textContent = data.error + " ✗" || "Sending email failed ✗"
+            status.className = 'status error'
+          }
+        }).catch((e) => {
+          alert(e)
+          status.textContent = 'Error occurred ✗'
+          status.className = 'status error'
+        })
 
-    document.getElementById("confirmPassword").addEventListener('input', (e) => {
-      const password = document.getElementById('password').value
-      const confirmPassword = e.target.value
-      const status = document.getElementById('confirmPasswordStatus')
-      validationState.confirmPassword = false
+      })
+    } else if (!tokenParam) {
+      // second step enter verification code then redirect to signup/?email=<email>&token=<token>
+      document.getElementById('verificationForm').classList.add('active')
+      document.getElementById('step1').classList.add('completed')
+      document.getElementById('step2').classList.add('active')
+      document.getElementById('prompt').textContent = "$ ./signup --verify-email"
 
-      if (!password.length || !confirmPassword.length) {
+      document.getElementById('unverifiedEmail').value = emailParam
+
+      const tokenInput = document.getElementById('token')
+      const verifyButton = document.getElementById('verifyButton')
+
+      tokenInput.focus()
+
+      tokenInput.addEventListener('input', (e) => {
+        const status = document.getElementById('tokenStatus')
+        const token = e.target.value.toUpperCase().replace(/[^A-F0-9]/g, "").slice(0, 8)
+        e.target.value = token
+        verifyButton.disabled = token.length != 8
         status.textContent = ''
         status.className = 'status'
-        return
-      }
-      if (password === confirmPassword) {
-        status.textContent = '✓'
-        status.className = 'status success'
-        validationState.confirmPassword = true
-      } else {
-        status.textContent = 'Passwords do not match ✗'
-        status.className = 'status error'
-      }
-    })
+      })
 
-    document.getElementById('birthDate').addEventListener('input', (e) => {
-      const birthDate = new Date(e.target.value)
-      const status = document.getElementById('birthDateStatus')
-      const isValid = minDate.getTime() < birthDate.getTime() && birthDate.getTime() <= maxDate.getTime()
-      validationState.birthDate = isValid
-      if (isValid) {
-        status.textContent = "✓"
-        status.className = 'status success'
-      } else {
-        status.textContent = "You must be +13y and -99y ✗"
-        status.className = 'status error'
-      }
-    })
+      document.getElementById('verificationForm').addEventListener('submit', (e) => {
+        e.preventDefault()
 
-    document.getElementById('displayName').addEventListener('input', (e) => {
-      const displayName = e.target.value
-      const status = document.getElementById('displayNameStatus')
-      validationState.displayName = false
-      if (!displayName.length) {
-        status.textContent = ''
-        status.className = 'status'
-        validationState.displayName = true
-      } else if (displayName.length > 16) {
-        status.textContent = 'max 16 characters ✗'
-        status.className = 'status error'
-      } else {
-        status.textContent = '✓'
-        status.className = 'status success'
-        validationState.displayName = true
-      }
-    })
+        const token = tokenInput.value
+        const status = document.getElementById('tokenStatus')
 
-    document.getElementById('signupForm').addEventListener('submit', (e) => {
-      e.preventDefault()
-      const formData = new FormData(e.target)
+        fetch('/api/valid-email-verification', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: emailParam, token })
+        }).then(res => res.json()).then(data => {
+          if (data.isValid) {
+            window.location.href = `/signup?email=${encodeURIComponent(emailParam)}&token=${encodeURIComponent(token)}`
+          } else {
+            status.textContent = data.error ? data.error + " ✗" : "invalid code ✗"
+            status.className = 'status error'
+          }
+        }).catch((e) => {
+          alert(e)
+          status.textContent = 'Error occurred ✗'
+          status.className = 'status error'
+        })
+      })
 
-      const data = {
-        username: formData.get('username'),
-        email: formData.get('email'),
-        password: formData.get('password'),
-        birthDate: new Date(formData.get('birthDate')),
-        displayName: formData.get('displayName') || undefined,
-      }
-
-      fetch('/signup', {
+    } else {
+      // third step enter the rest of the details and send POST to /signup then redirect to home
+      fetch('/api/valid-email-verification', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
+        body: JSON.stringify({ email: emailParam, token: tokenParam })
+      }).then(res => res.json()).then(data => {
+        if (!data.isValid) window.location.href = `/signup?status=expired`
+      }).catch(() => { })
+      document.getElementById('signupForm').classList.add('active')
+      document.getElementById('step1').classList.add('completed')
+      document.getElementById('step2').classList.add('completed')
+      document.getElementById('step3').classList.add('active')
+      document.getElementById('prompt').textContent = "$ ./signup --new-user"
+
+      document.getElementById('verifiedEmail').value = emailParam
+
+      const minDate = new Date('1919-01-01')
+      const maxDate = new Date(Date.now() - 13 * 365 * 24 * 60 * 60 * 1000)
+      document.getElementById("birthDate").max = maxDate.toISOString().split("T")[0]
+
+      const validationState = {
+        username: false,
+        password: false,
+        confirmPassword: false,
+        birthDate: false,
+        displayName: true
+      }
+
+      const submitButton = document.getElementById('submitButton')
+      setInterval(() => submitButton.disabled = !Object.values(validationState).every(v => v === true), 100)
+
+      let usernameTimer
+      document.getElementById('username').addEventListener('input', (e) => {
+        const username = e.target.value
+        const status = document.getElementById('usernameStatus')
+        validationState.username = false
+        if (!username.length) {
+          status.textContent = ""
+          status.className = 'status'
+          return
+        }
+        if (username.length > 16) {
+          status.textContent = "max 16 characters ✗"
+          status.className = 'status error'
+          return
+        }
+        if (!/^[A-Za-z0-9_]+$/.test(username)) {
+          status.textContent = "can only contain A-z, 0-9 and _ ✗"
+          status.className = 'status error'
+          return
+        }
+        status.textContent = 'Checking...'
+        status.className = 'status'
+
+        clearTimeout(usernameTimer)
+        usernameTimer = setTimeout(() => {
+          fetch('/api/available-username', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username: username })
+          })
+            .then(res => res.json())
+            .then(data => {
+              if (e.target.value === username) {
+                if (data.available) {
+                  status.textContent = 'Available ✓'
+                  status.className = 'status success'
+                  validationState.username = true
+                } else if (data.available === false) {
+                  status.textContent = 'Taken ✗'
+                  status.className = 'status error'
+                } else {
+                  status.textContent = 'Error checking ✗'
+                  status.className = 'status error'
+                }
+              }
+            })
+            .catch(() => {
+              if (e.target.value === username) {
+                status.textContent = 'Error checking ✗'
+                status.className = 'status error'
+              }
+            })
+        }, 1500)
       })
-        .then(async res => {
+
+      document.getElementById("password").addEventListener('input', (e) => {
+        const password = e.target.value
+        const status = document.getElementById('passwordStatus')
+        validationState.password = false
+        validationState.confirmPassword = false
+
+        if (!password.length) {
+          status.textContent = ""
+          status.className = 'status'
+        } else if (!/[a-zA-Z]+/.test(password)) {
+          status.textContent = 'must have a letter ✗'
+          status.className = 'status error'
+        } else if (!/\d+/.test(password)) {
+          status.textContent = 'must have a number ✗'
+          status.className = 'status error'
+        } else if (!/[^a-zA-Z0-9]+/.test(password)) {
+          status.textContent = 'must have a special character ✗'
+          status.className = 'status error'
+        } else if (!/^(?=.*[a-zA-Z])(?=.*\d)(?=.*[^a-zA-Z0-9]).{8,32}$/.test(password)) {
+          status.textContent = 'must be between 8-32 characters ✗'
+          status.className = 'status error'
+        } else {
+          status.textContent = '✓'
+          status.className = 'status success'
+          validationState.password = true
+        }
+
+        document.getElementById("confirmPassword").dispatchEvent(new Event('input', { bubbles: true }))
+      })
+
+      document.getElementById("confirmPassword").addEventListener('input', (e) => {
+        const password = document.getElementById('password').value
+        const confirmPassword = e.target.value
+        const status = document.getElementById('confirmPasswordStatus')
+        validationState.confirmPassword = false
+
+        if (!password.length || !confirmPassword.length) {
+          status.textContent = ''
+          status.className = 'status'
+          return
+        }
+        if (password === confirmPassword) {
+          status.textContent = '✓'
+          status.className = 'status success'
+          validationState.confirmPassword = true
+        } else {
+          status.textContent = 'Passwords do not match ✗'
+          status.className = 'status error'
+        }
+      })
+
+      document.getElementById('birthDate').addEventListener('input', (e) => {
+        const birthDate = new Date(e.target.value)
+        const status = document.getElementById('birthDateStatus')
+        const isValid = minDate.getTime() < birthDate.getTime() && birthDate.getTime() <= maxDate.getTime()
+        validationState.birthDate = isValid
+        if (isValid) {
+          status.textContent = "✓"
+          status.className = 'status success'
+        } else {
+          status.textContent = "You must be +13y and -99y ✗"
+          status.className = 'status error'
+        }
+      })
+
+      document.getElementById('displayName').addEventListener('input', (e) => {
+        const displayName = e.target.value
+        const status = document.getElementById('displayNameStatus')
+        validationState.displayName = false
+        if (!displayName.length) {
+          status.textContent = ''
+          status.className = 'status'
+          validationState.displayName = true
+        } else if (displayName.length > 16) {
+          status.textContent = 'max 16 characters ✗'
+          status.className = 'status error'
+        } else {
+          status.textContent = '✓'
+          status.className = 'status success'
+          validationState.displayName = true
+        }
+      })
+
+      document.getElementById('signupForm').addEventListener('submit', (e) => {
+        e.preventDefault()
+        const formData = new FormData(e.target)
+
+        const data = {
+          email: emailParam,
+          token: tokenParam,
+          username: formData.get('username'),
+          password: formData.get('password'),
+          birthDate: new Date(formData.get('birthDate')),
+          displayName: formData.get('displayName') || undefined,
+        }
+
+        fetch('/signup', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        }).then(res => {
           if (res.ok) {
-            window.location.href = '/login'
+            window.location.href = `/login?email=${encodeURIComponent(data.username)}`
           } else {
-            throw new Error(`(${res.status}) ${(await res.json().catch(() => { }))?.error ?? "Signup failed"}`)
+            res.json().then((({ error, redirect }) => {
+              alert(`${error}\n\n✗ Error creating account. Please try again, or contact amr@programmer.net`)
+              if (redirect) window.location.href = redirect
+            }))
           }
-        })
-        .catch(err => {
-          alert(`${err}\n\n✗ Error creating account. Please try again, or contact amr@programmer.net`)
-        })
-    })
+        }).catch(error => alert(`${error}\n\n✗ Error creating account. Please try again, or contact amr@programmer.net`))
+      })
+    }
   </script>
 </body>
 
