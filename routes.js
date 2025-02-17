@@ -48,7 +48,7 @@ router.post('/signup', rateLimit({ keyGenerator: req => getIP(req), limit: 1, wi
 
     destroyVerification(email, { token })
 
-    res.status(201).redirect("/login")
+    res.status(201).redirect(`/login?username=${username}`)
 })
 
 router.get('/login', sessionParser(), (req, res) => {
