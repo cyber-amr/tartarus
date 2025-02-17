@@ -1,7 +1,7 @@
 const SIGNABLE_PROVIDERS = [
     'yandex.com', 'yandex.ru', 'yandex.ua', 'yandex.by', 'yandex.kz',
-    'gmail.com', 'googlemail.com',
-    'icloud.com', 'me.com'
+    'icloud.com', 'me.com', 'mac.com',
+    'gmail.com', 'googlemail.com'
 ]
 const VERIFICATION_SPAN = 30 * 60 * 1000 // (30min) in ms
 const VERIFICATION_REFRESH_AFTER = 1 * 60 * 1000 // (5min) in ms
