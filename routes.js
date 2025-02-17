@@ -4,6 +4,7 @@ const { rateLimit } = require('express-rate-limit')
 const db = require("./db.js")
 const { createUser, login, User, SecretUser } = require('./userer.js')
 const { sessionParser } = require('./sessioner.js')
+const { sendVerificationEmail, isValidVerification, destroyVerification } = require('./emailer.js')
 
 const isStr = (x) => x && typeof x === "string"
 const getIP = (req) => req.headers['x-forwarded-for'] ?? req.ip
@@ -106,6 +107,25 @@ router.post('/api/registered-email', async (req, res) => {
     if (!email) return res.status(400).json({ error: 'email is required' })
 
     res.json({ registered: !!(await db.collection("secrets").findOne({ 'email.address': email })) })
+})
+
+router.post('/api/request-verification-email', sessionParser(), rateLimit({
+    keyGenerator: (req) => req.body?.email ?? getIP(req),
+    skipFailedRequests: true,
+    limit: 3,
+    windowMs: 30 * 60 * 1000
+}), async (req, res) => {
+    if (req.session) return res.status(403).json({ error: 'Unauthorized' })
+
+    const email = req.body?.email
+    if (!email) return res.status(400).json({ error: 'email is required' })
+    if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email)) return res.status(400).json({ error: 'Unsupported email format' })
+
+    const { error, errorCode, sent } = await sendVerificationEmail(email, 'create an account')
+
+    if (error) return res.status(errorCode ?? 400).json({ error })
+
+    res.status(202).json({ sent })
 })
 
 router.use('/private-api', sessionParser({ touch: true, required: true }), rateLimit({
