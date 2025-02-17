@@ -51,7 +51,12 @@ module.exports.sendEmail = ({ to, subject, body }) => {
     return client.send(new SendEmailCommand({
         FromEmailAddress: 'Tartarus | =?UTF-8?B?2KrYp9ix2KrYp9ix2YjYsw==?= <AI@tartarus.space>',
         Destination: { ToAddresses: [to] },
-        Content: { Simple: { Subject: subject, Body: body } }
+        Content: {
+            Simple: {
+                Subject: { Data: subject, Charset: 'UTF-8' },
+                Body: { Text: { Data: body, Charset: 'UTF-8' } }
+            }
+        }
     }))
 }
 
