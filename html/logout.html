@@ -75,9 +75,16 @@
       color: #9ece6e;
     }
 
-    .status {
-      color: #f6666f;
+    .info {
       margin-bottom: 1rem;
+    }
+
+    .error {
+      color: #f6666f;
+    }
+
+    .success {
+      color: #9ece6e;
     }
 
     .progress {
@@ -118,6 +125,43 @@
       margin-top: 1rem;
       text-align: center;
     }
+
+    .button-container {
+      display: flex;
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    button {
+      flex: 1;
+      padding: 0.5rem;
+      background-color: #6faaf6;
+      color: #1a1b26;
+      border: none;
+      cursor: pointer;
+      font-family: 'Courier New', 'Lucida Console', monospace;
+      font-weight: bold;
+    }
+
+    button:hover {
+      background-color: #3c66c3;
+    }
+
+    button:disabled {
+      background-color: #393f69;
+      cursor: not-allowed;
+      opacity: 0.7;
+    }
+
+    .cursor {
+      animation: blink 0.5s step-start 0s infinite;
+    }
+
+    @keyframes blink {
+      50% {
+        opacity: 0;
+      }
+    }
   </style>
 </head>
 
@@ -146,13 +190,17 @@
         <span class="data-value" id="sessionDuration"></span>
       </div>
     </div>
-    <div class="status">
+    <div class="info error" id="info">
       [INFO] Terminating active session<span class="spinner">|</span>
     </div>
     <div class="progress">
       <div class="progress-bar"></div>
     </div>
-    <div class="message">You will be redirected to the login page...</div>
+    <div class="message"></div>
+    <div class="button-container">
+      <button id="loginButton" disabled>LOGIN <span class="cursor">█</span></button>
+      <button id="homeButton" onclick="window.location.href='/'" disabled>HOME <span class="cursor">█</span></button>
+    </div>
   </div>
 
   <script>
@@ -160,7 +208,10 @@
       document.getElementById('username').textContent = user.username
       document.getElementById('email').textContent = user.email
       document.getElementById('displayName').textContent = user.displayName
+      document.getElementById('loginButton').onclick = () => window.location.href = `/login?username=${user.username}`
     }).catch(e => alert(e))
+
+    let updateDurationInterval
 
     fetch('/private-api/session', { method: 'GET', headers: { 'Content-Type': 'application/json' } }).then(res => res.json()).then(session => {
       document.getElementById('lastActive').textContent = `${(new Date(session.lastActive)).toLocaleDateString('en', {
@@ -179,7 +230,7 @@
         document.getElementById('sessionDuration').textContent = `${d ? d + "d" : ""} ${h ? h + "h" : ""} ${m ? m + "m" : ""} ${t % 60}s`
       }
       updateDuration()
-      setInterval(updateDuration, 1000)
+      updateDurationInterval = setInterval(updateDuration, 1000)
     }).catch(e => alert(e))
 
     const spinnerChars = ['|', '/', '─', '\\']
@@ -191,9 +242,17 @@
     }, 250)
 
     setTimeout(() => {
-      fetch('/logout', { method: "POST", headers: { 'Content-Type': 'application/json' } })
+      fetch('/logout', { method: "POST", headers: { 'Content-Type': 'application/json' } }).then(res => {
+        if (res.ok) {
+          document.getElementById('info').childNodes[0].textContent = '[INFO] Session terminated successfully'
+          document.getElementById('info').className = 'info success'
+          document.getElementById('loginButton').disabled = false
+          document.getElementById('homeButton').disabled = false
+
+          clearInterval(updateDurationInterval)
+        }
+      })
       localStorage.clear()
-      window.location.href = '/login'
     }, 5000)
   </script>
 </body>
