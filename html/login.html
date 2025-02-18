@@ -249,11 +249,11 @@
 
   <script>
     const params = new URLSearchParams(window.location.search)
-    const emailParam = params.get('email')
-    const usernameParam = params.get('username')
+    const idParam = params.get('email') ?? params.get('username')
 
     const submitButton = document.getElementById('submitButton')
     const identifier = document.getElementById('identifier')
+    const identifierLabel = document.getElementById('identifierLabel')
     const password = document.getElementById('password')
     const passwordStatus = document.getElementById('passwordStatus')
 
@@ -264,36 +264,15 @@
     }
     let processing = false
 
-    if (emailParam && /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(emailParam)) {
-      document.getElementById('identifierLabel').textContent = 'email:~$'
-      const link = document.createElement('a')
-      link.textContent = 'another account?'
-      link.href = '/login'
-      document.getElementById('identifierStatus').textContent = ''
-      document.getElementById('identifierStatus').appendChild(link)
-
-      identifier.value = emailParam
-      identifier.disabled = true
-      valid.email = true
-      valid.username = false
-      password.focus()
-    } else if (usernameParam && /^[A-Za-z0-9_]{1,16}$/.test(usernameParam)) {
-      const link = document.createElement('a')
-      link.textContent = 'another account?'
-      link.href = '/login'
-      document.getElementById('identifierStatus').textContent = ''
-      document.getElementById('identifierStatus').appendChild(link)
-
-      identifier.value = usernameParam
-      identifier.disabled = true
-      valid.username = true
-      valid.email = false
+    if (idParam) {
+      identifier.value = idParam
       password.focus()
     } else identifier.focus()
 
     setInterval(() => {
       valid.username = /^[A-Za-z0-9_]{1,16}$/.test(identifier.value)
       valid.email = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(identifier.value)
+      identifierLabel.textContent = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(identifier.value) ? 'email:~$' : 'username:~$'
       valid.pass = password.value.length >= 8
       submitButton.disabled = processing || (!valid.username && !valid.email) || !valid.pass
     }, 50)
@@ -331,7 +310,7 @@
           identifier.focus()
           valid.pass = false
         }).finally(() => {
-          processing = true
+          processing = false
           submitButton.classList.remove('loading')
         })
     })
