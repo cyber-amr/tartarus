@@ -138,6 +138,37 @@
       }
     }
 
+    @keyframes spin {
+      0% {
+        transform: rotate(0deg);
+      }
+
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+
+    .loading {
+      position: relative;
+      cursor: wait !important;
+    }
+
+    .loading::after {
+      content: "";
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      vertical-align: middle;
+      border: 2px solid #1a1b26;
+      border-top-color: transparent;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    .loading .button-text {
+      display: none;
+    }
+
     .optional {
       color: #666699;
       font-size: 0.8em;
@@ -216,7 +247,9 @@
         <div class="status" id="initialEmailStatus"></div>
       </div>
       <div>Have an account? <a href="/login">login</a> instead</div>
-      <button type="submit" id="emailSubmitButton" disabled>NEXT <span class="cursor">█</span></button>
+      <button type="submit" id="emailSubmitButton" disabled>
+        <span class="button-text" id="emailSubmitButtonText">NEXT <span class="cursor">█</span></span>
+      </button>
     </form>
 
     <form id="verificationForm" class="form-step">
@@ -230,7 +263,9 @@
         <input type="text" id="token" name="token" required>
         <div class="status" id="tokenStatus"></div>
       </div>
-      <button type="submit" id="verifyButton" disabled>NEXT <span class="cursor">█</span></button>
+      <button type="submit" id="verifyButton" disabled>
+        <span class="button-text">VERIFY <span class="cursor">█</span></span>
+      </button>
     </form>
 
     <form id="signupForm" class="form-step">
@@ -264,7 +299,9 @@
         <input type="text" id="displayName" name="displayName">
         <div class="status" id="displayNameStatus"></div>
       </div>
-      <button type="submit" id="submitButton" disabled>CREATE ACCOUNT <span class="cursor">█</span></button>
+      <button type="submit" id="submitButton" disabled>
+        <span class="button-text">CREATE ACCOUNT <span class="cursor">█</span></span>
+      </button>
     </form>
   </div>
 
@@ -294,6 +331,7 @@
       initialEmailInput.addEventListener('input', (e) => {
         const email = e.target.value
         const status = document.getElementById('initialEmailStatus')
+        const emailButtonText = document.getElementById('emailSubmitButtonText')
         emailSubmitButton.disabled = true
 
         if (!email.length) {
@@ -306,7 +344,7 @@
 
         status.textContent = 'Checking...'
         status.className = 'status'
-        emailSubmitButton.childNodes[0].nodeValue = 'NEXT '
+        emailButtonText.childNodes[0].nodeValue = 'NEXT '
 
         clearTimeout(emailTimer)
         emailTimer = setTimeout(() => {
@@ -321,12 +359,12 @@
                 if (data.registered) {
                   status.textContent = 'Already registered'
                   status.className = 'status'
-                  emailSubmitButton.childNodes[0].nodeValue = 'LOGIN '
+                  emailButtonText.childNodes[0].nodeValue = 'LOGIN '
                   emailSubmitButton.disabled = false
                 } else {
                   status.textContent = '✓'
                   status.className = 'status success'
-                  emailSubmitButton.childNodes[0].nodeValue = 'NEXT '
+                  emailButtonText.childNodes[0].nodeValue = 'NEXT '
                   emailSubmitButton.disabled = false
                 }
               }
@@ -344,11 +382,15 @@
         e.preventDefault()
         const email = initialEmailInput.value
         const status = document.getElementById('initialEmailStatus')
+        const submitButton = document.getElementById('emailSubmitButton')
 
         if (status.textContent == 'Already registered') {
           window.location.href = `/login?email=${encodeURIComponent(email)}`
           return
         }
+
+        submitButton.classList.add('loading')
+        submitButton.disabled = true
 
         fetch('/api/request-verification-email', {
           method: 'POST',
@@ -365,8 +407,10 @@
           alert(e)
           status.textContent = 'Error occurred ✗'
           status.className = 'status error'
+        }).finally(() => {
+          submitButton.classList.remove('loading')
+          submitButton.disabled = false
         })
-
       })
     } else if (!tokenParam) {
       // second step enter verification code then redirect to signup/?email=<email>&token=<token>
@@ -396,6 +440,10 @@
 
         const token = tokenInput.value
         const status = document.getElementById('tokenStatus')
+        const submitButton = document.getElementById('verifyButton')
+
+        submitButton.classList.add('loading')
+        submitButton.disabled = true
 
         fetch('/api/valid-email-verification', {
           method: 'POST',
@@ -412,6 +460,9 @@
           alert(e)
           status.textContent = 'Error occurred ✗'
           status.className = 'status error'
+        }).finally(() => {
+          submitButton.classList.remove('loading')
+          submitButton.disabled = false
         })
       })
 
@@ -588,6 +639,10 @@
       document.getElementById('signupForm').addEventListener('submit', (e) => {
         e.preventDefault()
         const formData = new FormData(e.target)
+        const submitButton = document.getElementById('verifyButton')
+
+        submitButton.classList.add('loading')
+        submitButton.disabled = true
 
         const data = {
           email: emailParam,
@@ -612,6 +667,10 @@
             }))
           }
         }).catch(error => alert(`${error}\n\n✗ Error creating account. Please try again, or contact amr@programmer.net`))
+          .finally(() => {
+            submitButton.classList.remove('loading')
+            submitButton.disabled = false
+          })
       })
     }
   </script>
