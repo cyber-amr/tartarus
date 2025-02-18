@@ -52,7 +52,7 @@ module.exports.client = client
 
 module.exports.sendEmail = ({ to, subject, body }) => {
     return client.send(new SendEmailCommand({
-        FromEmailAddress: 'Tartarus | =?UTF-8?B?2KrYp9ix2KrYp9ix2YjYsw==?= <AI@tartarus.space>',
+        FromEmailAddress: 'Tartarus =?UTF-8?B?2KrYp9ix2KrYp9ix2YjYsw==?= <AI@tartarus.space>',
         Destination: { ToAddresses: [to] },
         Content: {
             Simple: {
@@ -110,7 +110,7 @@ if (process.env.SMIME_FULLCHAIN_PEM_PATH) {
         ].join('\r\n')
 
         const message = [
-            'From: Tartarus | =?UTF-8?B?2KrYp9ix2KrYp9ix2YjYsw==?= <AI@tartarus.space>',
+            'From: Tartarus =?UTF-8?B?2KrYp9ix2KrYp9ix2YjYsw==?= <AI@tartarus.space>',
             'To: ' + to,
             'Subject: ' + subject,
             'MIME-Version: 1.0',
@@ -128,7 +128,7 @@ if (process.env.SMIME_FULLCHAIN_PEM_PATH) {
         ].join('\r\n')
 
         return client.send(new SendEmailCommand({
-            FromEmailAddress: 'Tartarus | =?UTF-8?B?2KrYp9ix2KrYp9ix2YjYsw==?= <AI@tartarus.space>',
+            FromEmailAddress: 'Tartarus =?UTF-8?B?2KrYp9ix2KrYp9ix2YjYsw==?= <AI@tartarus.space>',
             Destination: { ToAddresses: [to] },
             Content: { Raw: { Data: Buffer.from(message) } }
         }))
