@@ -156,7 +156,7 @@ module.exports.sendVerificationEmail = async (email, reason) => {
     }
     const { token } = stored ?? await this.createVerification(email, reason)
 
-    const send = SIGNABLE_PROVIDERS.includes(email.split('@')[1]) ? this.sendSignedEmail : this.sendEmail
+    const send = SIGNABLE_PROVIDERS.includes(email.split('@')[1]) ? this.sendSignedEmail ?? this.sendEmail : this.sendEmail
     try {
         const body = VERIFICATION_EMAIL_BODY
             .replace('[reason]', reason)
