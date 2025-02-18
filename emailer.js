@@ -12,9 +12,9 @@ Someone (hopefully you) requested to [reason] using this email address.
 
 Verify using the following code:
 
-
+----------
 [verification_code]
-
+----------
 
 Valid for 30 minutes.
 Never share this code with anyone
