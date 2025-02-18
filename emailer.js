@@ -1,5 +1,6 @@
 const SIGNABLE_PROVIDERS = [
     'yandex.com', 'yandex.ru', 'yandex.ua', 'yandex.by', 'yandex.kz',
+    'yahoo.com', 'yahoo.co.uk', 'yahoo.ca', 'yahoo.de', 'yahoo.fr',
     'icloud.com', 'me.com', 'mac.com',
     'gmail.com', 'googlemail.com'
 ]
