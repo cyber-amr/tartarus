@@ -138,6 +138,37 @@
       }
     }
 
+    @keyframes spin {
+      0% {
+        transform: rotate(0deg);
+      }
+
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+
+    .loading {
+      position: relative;
+      cursor: wait !important;
+    }
+
+    .loading::after {
+      content: "";
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      vertical-align: middle;
+      border: 2px solid #1a1b26;
+      border-top-color: transparent;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    .loading .button-text {
+      display: none;
+    }
+
     .forgot-password {
       text-align: right;
       margin-top: 0.5rem;
@@ -210,7 +241,9 @@
         <a href="/recovery">Forgot password?</a>
       </div>
       <div>New to the space? <a href="/signup">sign up</a> instead</div>
-      <button type="submit" id="submitButton" disabled>LOGIN <span class="cursor">█</span></button>
+      <button type="submit" id="submitButton" disabled>
+        <span class="button-text">LOGIN <span class="cursor">█</span></span>
+      </button>
     </form>
   </div>
 
@@ -229,6 +262,7 @@
       email: false,
       pass: false
     }
+    let processing = false
 
     if (emailParam && /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(emailParam)) {
       document.getElementById('identifierLabel').textContent = 'email:~$'
@@ -261,13 +295,16 @@
       valid.username = /^[A-Za-z0-9_]{1,16}$/.test(identifier.value)
       valid.email = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(identifier.value)
       valid.pass = password.value.length >= 8
-      submitButton.disabled = (!valid.username && !valid.email) || !valid.pass
+      submitButton.disabled = processing || (!valid.username && !valid.email) || !valid.pass
     }, 50)
 
     document.getElementById('loginForm').addEventListener('submit', (e) => {
       e.preventDefault()
 
       const formData = new FormData(e.target)
+
+      processing = true
+      submitButton.classList.add('loading')
 
       const data = {
         username: valid.username ? formData.get('identifier') ?? usernameParam : undefined,
@@ -293,6 +330,9 @@
           password.value = ""
           identifier.focus()
           valid.pass = false
+        }).finally(() => {
+          processing = true
+          submitButton.classList.remove('loading')
         })
     })
   </script>
