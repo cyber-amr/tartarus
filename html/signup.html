@@ -358,7 +358,7 @@
           if (data.sent) {
             window.location.href = `/signup?email=${encodeURIComponent(email)}`
           } else {
-            status.textContent = data.error + " ✗" || "Sending email failed ✗"
+            status.textContent = data.error ? data.error + " ✗" : "Sending email failed ✗"
             status.className = 'status error'
           }
         }).catch((e) => {
