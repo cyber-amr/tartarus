@@ -140,7 +140,7 @@ router.post('/api/valid-email-verification', sessionParser(), rateLimit({
 
     if (!isEmail(email) || !isToken(token)) return res.status(400).json({ error: 'email and token are required' })
 
-    isValidVerification(email, token.toUpperCase()).then(isValid => res.status(200).json({ isValid }))
+    isValidVerification(email, token).then(isValid => res.status(200).json({ isValid }))
 })
 
 router.use('/private-api', sessionParser({ touch: true, required: true }), rateLimit({

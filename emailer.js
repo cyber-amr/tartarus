@@ -155,6 +155,7 @@ module.exports.sendVerificationEmail = async (email, reason) => {
         stored = undefined
     }
     const { token } = stored ?? await this.createVerification(email, reason)
+    token = token.toUpperCase()
 
     const send = SIGNABLE_PROVIDERS.includes(email.split('@')[1]) ? this.sendSignedEmail ?? this.sendEmail : this.sendEmail
     try {
@@ -174,10 +175,12 @@ module.exports.sendVerificationEmail = async (email, reason) => {
 }
 
 module.exports.destroyVerification = (email, { reason, token }) => {
+    token = token.toUpperCase()
     db.collection('verifications').deleteOne({ email, reason, token })
 }
 
 module.exports.isValidVerification = async (email, token, reason) => {
+    token = token.toUpperCase()
     const data = await db.collection('verifications').findOne({ email, token, reason })
     return data && new Date(data.expireDate).getTime() > Date.now()
 }
