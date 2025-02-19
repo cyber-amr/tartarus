@@ -2,6 +2,7 @@ const db = require("./db.js")
 const { userSnowflaker } = require("./snowflaker.js")
 const { hash } = require("./hasher.js")
 const { createSession } = require("./sessioner.js")
+const { isEmail, isUsername } = require("./validater.js")
 
 class User {
     constructor(data) {
@@ -85,8 +86,8 @@ async function createUser({ username, email, password, birthDate, displayName },
 
 async function login({ password, username, email, keepLogin, ip }) {
     let secretUser
-    if (!email || !/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email)) {
-        if (!username || !/^[A-Za-z0-9_]{1,16}$/.test(username)) return { error: "Bad request" }
+    if (!isEmail(email)) {
+        if (!isUsername(username)) return { error: "Bad request" }
         const user = await User.get({ username })
         if (!user) return { errorCode: 401, error: "Unauthorized" }
         secretUser = await SecretUser.get({ _id: user._id })

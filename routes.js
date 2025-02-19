@@ -5,6 +5,7 @@ const db = require("./db.js")
 const { createUser, login, User, SecretUser } = require('./userer.js')
 const { sessionParser } = require('./sessioner.js')
 const { sendVerificationEmail, isValidVerification, destroyVerification } = require('./emailer.js')
+const { isEmail, isToken, isUsername, isPassword, isDateIn, isDisplayName } = require('./validater.js')
 
 const isStr = (x) => x && typeof x === "string"
 const getIP = (req) => req.headers['x-forwarded-for'] ?? req.ip
@@ -27,26 +28,23 @@ router.post('/signup',
 
         const email = req.body.email
         if (!isStr(email)) return res.status(400).json({ error: 'email is required' })
-        if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email)) return res.status(400).json({ error: 'Unsupported email format' })
+        if (!isEmail(email)) return res.status(400).json({ error: 'Unsupported email format' })
 
         const token = req.body.token
-        if (!isStr(token) || !(await isValidVerification(email, token, 'create an account'))) return res.status(403).json({ error: 'Invalid verification code', redirect: '/signup?status=expired' })
+        if (!isToken(token) || !(await isValidVerification(email, token, 'create an account'))) return res.status(403).json({ error: 'Invalid verification code', redirect: '/signup?status=expired' })
 
         const username = req.body.username
-        if (!isStr(username) || !/^[A-Za-z0-9_]{1,16}$/.test(username)) return res.status(400).json({ error: 'username is required, max 16 characters of A-z, 0-9 and _ only' })
+        if (!isUsername(username)) return res.status(400).json({ error: 'username is required, max 16 characters of A-z, 0-9 and _ only' })
 
         const password = req.body.password
-        if (!isStr(password) || !/^(?=.*[a-zA-Z])(?=.*\d)(?=.*[^a-zA-Z0-9]).{8,32}$/.test(password))
-            return res.status(400).json({ error: 'password is required, 8-32 length and must have a letter, a numbers and a special character' })
+        if (!isPassword(password)) return res.status(400).json({ error: 'password is required, 8-32 length and must have a letter, a numbers and a special character' })
 
         const birthDate = new Date(req.body.birthDate)
         const [minDate, maxDate] = [new Date('1919-01-01'), new Date(Date.now() - 13 * 365 * 24 * 60 * 60 * 1000)] // 13 years before
-        if (isNaN(birthDate) || minDate.getTime() > birthDate.getTime() || maxDate.getTime() < birthDate.getTime())
-            return res.status(400).json({ error: 'birthDate is required, +13y age' })
+        if (!isDateIn(birthDate, minDate, maxDate)) return res.status(400).json({ error: 'birthDate is required, +13y age' })
 
-        const displayName = req.body.displayName
-        if (displayName && (typeof displayName !== 'string' || displayName.length > 16))
-            return res.status(400).json({ error: 'displayName cannot exceed 16 characters' })
+        const displayName = req.body.displayName ?? ''
+        if (!isDisplayName(displayName)) return res.status(400).json({ error: 'displayName cannot exceed 16 characters' })
 
         const { error, errorCode } = await createUser({ username, email, password, birthDate, displayName }, getIP(req))
         if (error) return res.status(errorCode ?? 400).json({ error })
@@ -66,8 +64,8 @@ router.post('/login', rateLimit({ keyGenerator: req => getIP(req), limit: 5, win
     const password = req.body?.password
     const username = req.body?.username
     const email = req.body?.email
-    const keepLogin = req.body?.keepMeLoggedIn
-    if (!isStr(password) || (!isStr(username) && !isStr(email))) return res.status(400).json({ error: "Bad request" })
+    const keepLogin = !!req.body?.keepMeLoggedIn
+    if (!isPassword(password) || (!isUsername(username) && !isEmail(email))) return res.status(400).json({ error: "Bad request" })
 
     const { errorCode, error, _id, expireDate } = await login({ password, username, email, keepLogin, ip: getIP(req) })
     if (error) return res.status(errorCode ?? 400).json({ error })
@@ -97,7 +95,7 @@ router.use('/api', rateLimit({
 
 router.post('/api/available-username', async (req, res) => {
     const username = req.body?.username
-    if (!username) return res.status(400).json({ error: 'username is required' })
+    if (!isUsername(username)) return res.status(400).json({ error: 'username is required, max 16 characters of A-z, 0-9 and _ only' })
 
     res.json({ available: !(await db.collection("users").findOne({ username })) })
 })
@@ -105,6 +103,7 @@ router.post('/api/available-username', async (req, res) => {
 router.post('/api/registered-email', async (req, res) => {
     const email = req.body?.email
     if (!email) return res.status(400).json({ error: 'email is required' })
+    if (!isEmail(email)) return res.status(400).json({ error: 'Unsupported email format' })
 
     res.json({ registered: !!(await db.collection("secrets").findOne({ email })) })
 })
@@ -119,7 +118,7 @@ router.post('/api/request-verification-email', sessionParser(), rateLimit({
 
     const email = req.body?.email
     if (!email) return res.status(400).json({ error: 'email is required' })
-    if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email)) return res.status(400).json({ error: 'Unsupported email format' })
+    if (!isEmail(email)) return res.status(400).json({ error: 'Unsupported email format' })
 
     const { error, errorCode, sent } = await sendVerificationEmail(email, 'create an account')
 
@@ -139,7 +138,7 @@ router.post('/api/valid-email-verification', sessionParser(), rateLimit({
     const email = req.body?.email
     const token = req.body?.token
 
-    if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email) || !/^[A-F0-9]+$/.test(token)) return res.status(400).json({ error: 'email and token are required' })
+    if (!isEmail(email) || !isToken(token)) return res.status(400).json({ error: 'email and token are required' })
 
     isValidVerification(email, token.toUpperCase()).then(isValid => res.status(200).json({ isValid }))
 })
