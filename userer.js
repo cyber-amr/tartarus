@@ -47,7 +47,7 @@ async function createUser({ username, email, password, birthDate, displayName },
     if (q.has(username) || !!(await db.collection("users").findOne({ username }))) return { errorCode: 409, error: 'username already in use, try another' }
     q.add(username)
 
-    if (q.has(email) || !!(await db.collection("secrets").findOne({ 'email.address': email }))) {
+    if (q.has(email) || !!(await db.collection("secrets").findOne({ email }))) {
         q.delete(username)
         return { errorCode: 409, error: 'email already registered, try logging-in' }
     }
@@ -67,7 +67,7 @@ async function createUser({ username, email, password, birthDate, displayName },
         })
         await db.collection("secrets").insertOne({
             _id,
-            email: { address: email, isVerified: false },
+            email,
             password: { hash: hashedPassword, lastUpdate: new Date(), oldPasswords: [] },
             loginIPs: [ip]
         })
@@ -91,7 +91,7 @@ async function login({ password, username, email, keepLogin, ip }) {
         if (!user) return { errorCode: 401, error: "Unauthorized" }
         secretUser = await SecretUser.get({ _id: user._id })
     } else {
-        secretUser = await SecretUser.get({ 'email.address': email })
+        secretUser = await SecretUser.get({ email })
     }
 
     // vulnerable but who gives a fuck

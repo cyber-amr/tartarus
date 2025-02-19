@@ -106,7 +106,7 @@ router.post('/api/registered-email', async (req, res) => {
     const email = req.body?.email
     if (!email) return res.status(400).json({ error: 'email is required' })
 
-    res.json({ registered: !!(await db.collection("secrets").findOne({ 'email.address': email })) })
+    res.json({ registered: !!(await db.collection("secrets").findOne({ email })) })
 })
 
 router.post('/api/request-verification-email', sessionParser(), rateLimit({
@@ -152,7 +152,7 @@ router.use('/private-api', sessionParser({ touch: true, required: true }), rateL
 
 router.get('/private-api/user', async (req, res) => {
     const user = await User.get({ _id: req.session.userId }).catch(error => res.status(500).json({ error }))
-    user.email = (await SecretUser.get({ _id: req.session.userId })).email.address
+    user.email = (await SecretUser.get({ _id: req.session.userId })).email
     res.status(200).json(user)
 })
 
