@@ -115,7 +115,7 @@ router.post('/api/request-verification-email', sessionParser(), rateLimit({
     limit: 3,
     windowMs: 30 * 60 * 1000
 }), async (req, res) => {
-    if (req.session) return res.status(403).json({ error: 'Unauthorized' })
+    if (req.session) return res.status(403).json({ error: 'Forbidden' })
 
     const email = req.body?.email
     if (!email) return res.status(400).json({ error: 'email is required' })
@@ -134,7 +134,7 @@ router.post('/api/valid-email-verification', sessionParser(), rateLimit({
     limit: 3,
     windowMs: 30 * 60 * 1000,
 }), (req, res) => {
-    if (req.session) return res.status(403).json({ error: 'Unauthorized' })
+    if (req.session) return res.status(403).json({ error: 'Forbidden' })
 
     const email = req.body?.email
     const token = req.body?.token
