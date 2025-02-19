@@ -67,7 +67,7 @@ async function createSession({ userId, ip, maxAge = DEFAULT_EXPIRE_TIME }) {
 
 function sessionParser({ touch = false, required = false } = {}) {
     return async (req, res, next) => {
-        const _id = req.signedCookies.sessionId
+        const _id = process.env.NODE_ENV === 'development' ? req.cookies.sessionId : req.signedCookies.sessionId
         req.session = await Session.get(_id)
 
         if (req.session && req.session.expireDate.getTime() < Date.now()) {
