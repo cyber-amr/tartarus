@@ -30,7 +30,7 @@ router.post('/signup',
         if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email)) return res.status(400).json({ error: 'Unsupported email format' })
 
         const token = req.body.token
-        if (!isStr(token) || !(await isValidVerification(email, token))) return res.status(403).json({ error: 'Invalid verification code', redirect: '/signup?status=expired' })
+        if (!isStr(token) || !(await isValidVerification(email, token, 'create an account'))) return res.status(403).json({ error: 'Invalid verification code', redirect: '/signup?status=expired' })
 
         const username = req.body.username
         if (!isStr(username) || !/^[A-Za-z0-9_]{1,16}$/.test(username)) return res.status(400).json({ error: 'username is required, max 16 characters of A-z, 0-9 and _ only' })

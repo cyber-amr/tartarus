@@ -177,7 +177,7 @@ module.exports.destroyVerification = (email, { reason, token }) => {
     db.collection('verifications').deleteOne({ email, reason, token })
 }
 
-module.exports.isValidVerification = async (email, token) => {
-    const data = await db.collection('verifications').findOne({ email, token })
+module.exports.isValidVerification = async (email, token, reason) => {
+    const data = await db.collection('verifications').findOne({ email, token, reason })
     return data && new Date(data.expireDate).getTime() > Date.now()
 }
