@@ -74,7 +74,7 @@ function sessionParser({ touch = false, required = false } = {}) {
             req.session.destroy(res)
             req.session = null
         }
-        if (!req.session) return required ? res.status(401) : next()
+        if (!req.session) return required ? res.status(401).json({ error: 'Unauthorized' }) : next()
 
         if (touch) {
             const { acknowledged, newExpireDate } = req.session.touch()
