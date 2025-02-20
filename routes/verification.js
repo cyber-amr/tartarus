@@ -1,4 +1,8 @@
 const router = require('express').Router()
+const { sessionParser } = require('../sessioner')
+const { rateLimit } = require('express-rate-limit')
+const { isEmail, isToken } = require('../validater')
+const { sendVerificationEmail, isValidVerification } = require('../emailer')
 
 const getIP = (req) => req.headers['x-forwarded-for'] ?? req.ip
 
