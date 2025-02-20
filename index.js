@@ -23,8 +23,16 @@ readdirSync(join(__dirname, 'routes')).forEach(file => {
 })
 
 
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
     console.log(`Web server running at http://localhost:${PORT}`)
+})
+
+process.on('SIGTERM', () => {
+    console.log('SIGTERM signal received: closing HTTP server')
+    server.close(() => {
+        console.log('HTTP server closed')
+        process.exit(0)
+    })
 })
 
 process.on("unhandledRejection", (r, p) => console.error(r, p))
