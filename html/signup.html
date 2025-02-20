@@ -392,7 +392,7 @@
         submitButton.classList.add('loading')
         submitButton.disabled = true
 
-        fetch('/api/request-verification-email', {
+        fetch('/verification/request', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ email })
@@ -445,7 +445,7 @@
         submitButton.classList.add('loading')
         submitButton.disabled = true
 
-        fetch('/api/valid-email-verification', {
+        fetch('/verification/is-valid', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ email: emailParam, token })
@@ -468,7 +468,7 @@
 
     } else {
       // third step enter the rest of the details and send POST to /signup then redirect to home
-      fetch('/api/valid-email-verification', {
+      fetch('/verification/is-valid', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: emailParam, token: tokenParam })

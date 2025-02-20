@@ -108,7 +108,7 @@ router.post('/api/registered-email', async (req, res) => {
     res.json({ registered: !!(await db.collection("secrets").findOne({ email })) })
 })
 
-router.post('/api/request-verification-email', sessionParser(), rateLimit({
+router.post('/verification/request', sessionParser(), rateLimit({
     keyGenerator: (req) => req.body?.email ?? getIP(req),
     skipFailedRequests: true,
     limit: 3,
@@ -127,7 +127,7 @@ router.post('/api/request-verification-email', sessionParser(), rateLimit({
     res.status(202).json({ sent })
 })
 
-router.post('/api/valid-email-verification', sessionParser(), rateLimit({
+router.post('/verification/is-valid', sessionParser(), rateLimit({
     keyGenerator: (req) => req.body?.email ?? getIP(req),
     skipSuccessfulRequests: true,
     limit: 3,
