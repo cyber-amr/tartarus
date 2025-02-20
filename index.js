@@ -3,7 +3,7 @@ require("dotenv").config()
 const express = require("express")
 const cookieParser = require('cookie-parser')
 const { join } = require('path')
-const routes = require("./routes.js")
+const { readdirSync } = require('fs')
 
 require("./db.js")
 
@@ -17,10 +17,14 @@ app.use(express.static(join(__dirname, "public"), {
     maxAge: 600000 // 10 min
 }))
 app.use(express.json())
-app.use(routes)
+
+readdirSync(join(__dirname, 'routes')).forEach(file => {
+    if (file.endsWith('.js')) app.use(require(join(__dirname, 'routes', file)))
+})
+
 
 app.listen(PORT, () => {
-	console.log(`Web server running at http://localhost:${PORT}`)
+    console.log(`Web server running at http://localhost:${PORT}`)
 })
 
 process.on("unhandledRejection", (r, p) => console.error(r, p))

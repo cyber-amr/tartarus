@@ -1,19 +1,13 @@
 const router = require('express').Router()
 const path = require('path')
+const { sessionParser } = require('../sessioner')
 const { rateLimit } = require('express-rate-limit')
-const db = require("./db.js")
-const { createUser, login, User, SecretUser } = require('./userer.js')
-const { sessionParser } = require('./sessioner.js')
-const { sendVerificationEmail, isValidVerification, destroyVerification } = require('./emailer.js')
-const { isEmail, isToken, isUsername, isPassword, isDateIn, isDisplayName } = require('./validater.js')
+const { isEmail, isToken, isUsername, isPassword, isDateIn, isDisplayName } = require('../validater')
+const { isValidVerification, destroyVerification } = require('../emailer')
+const { createUser, login } = require('../userer')
 
-const isStr = (x) => x && typeof x === "string"
 const getIP = (req) => req.headers['x-forwarded-for'] ?? req.ip
 
-// Static page routes
-router.get('/', (req, res) => res.sendFile(path.join(__dirname, 'html', 'index.html')))
-
-// Auth routes
 router.get('/signup', sessionParser(), (req, res) => {
     if (req.session) return res.redirect(302, "/")
     res.sendFile(path.join(__dirname, 'html', 'signup.html'))
@@ -83,94 +77,7 @@ router.post('/login', rateLimit({ keyGenerator: req => getIP(req), limit: 5, win
 router.get('/logout', sessionParser({ required: true }), (req, res) => res.sendFile(path.join(__dirname, 'html', 'logout.html')))
 router.post('/logout', sessionParser({ required: true }), async (req, res) => {
     req.session.destroy(res)
-    res.status(200).redirect('/login')
+    res.status(200).redirect('/')
 })
-
-// API routes
-router.use('/api', rateLimit({
-    keyGenerator: (req) => getIP(req),
-    limit: 15,
-    windowMs: 30 * 1000
-}))
-
-router.post('/api/available-username', async (req, res) => {
-    const username = req.body?.username
-    if (!isUsername(username)) return res.status(400).json({ error: 'username is required, max 16 characters of A-z, 0-9 and _ only' })
-
-    res.json({ available: !(await db.collection("users").findOne({ username })) })
-})
-
-router.post('/api/registered-email', async (req, res) => {
-    const email = req.body?.email
-    if (!email) return res.status(400).json({ error: 'email is required' })
-    if (!isEmail(email)) return res.status(400).json({ error: 'Unsupported email format' })
-
-    res.json({ registered: !!(await db.collection("secrets").findOne({ email })) })
-})
-
-router.post('/verification/request', sessionParser(), rateLimit({
-    keyGenerator: (req) => req.body?.email ?? getIP(req),
-    skipFailedRequests: true,
-    limit: 3,
-    windowMs: 30 * 60 * 1000
-}), async (req, res) => {
-    if (req.session) return res.status(403).json({ error: 'Forbidden' })
-
-    const email = req.body?.email
-    if (!email) return res.status(400).json({ error: 'email is required' })
-    if (!isEmail(email)) return res.status(400).json({ error: 'Unsupported email format' })
-
-    const { error, errorCode, sent } = await sendVerificationEmail(email, 'create an account')
-
-    if (error) return res.status(errorCode ?? 400).json({ error })
-
-    res.status(202).json({ sent })
-})
-
-router.post('/verification/is-valid', sessionParser(), rateLimit({
-    keyGenerator: (req) => req.body?.email ?? getIP(req),
-    skipSuccessfulRequests: true,
-    limit: 3,
-    windowMs: 30 * 60 * 1000,
-}), (req, res) => {
-    if (req.session) return res.status(403).json({ error: 'Forbidden' })
-
-    const email = req.body?.email
-    const token = req.body?.token
-
-    if (!isEmail(email) || !isToken(token)) return res.status(400).json({ error: 'email and token are required' })
-
-    isValidVerification(email, token).then(isValid => res.status(200).json({ isValid }))
-})
-
-router.use('/private-api', sessionParser({ touch: true, required: true }), rateLimit({
-    keyGenerator: (req) => req.session.userId,
-    limit: 15,
-    windowMs: 30 * 1000
-}))
-
-router.get('/private-api/user', async (req, res) => {
-    const user = await User.get({ _id: req.session.userId }).catch(error => res.status(500).json({ error }))
-    user.email = (await SecretUser.get({ _id: req.session.userId })).email
-    res.status(200).json(user)
-})
-
-router.get('/private-api/session', (req, res) => {
-    res.status(200).send({
-        userId: req.session.userId,
-        createDate: req.session.createDate,
-        lastActive: req.session.lastActive,
-        expireDate: req.session.expireDate
-    })
-})
-
-// Error handling middleware
-router.use((err, req, res, next) => {
-    console.error(err.stack);
-    res.status(500).json({ message: 'Something broke!' })
-})
-
-// 404 handler
-router.use((req, res) => res.status(404).sendFile(path.join(__dirname, 'html', '404.html')))
 
 module.exports = router;
