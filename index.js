@@ -1,6 +1,7 @@
 require("dotenv").config()
 
 const express = require("express")
+const helmet = require('helmet')
 const cookieParser = require('cookie-parser')
 const { join } = require('path')
 const { readdirSync } = require('fs')
@@ -11,6 +12,8 @@ const app = express()
 const PORT = process.env.PORT || 8080
 
 app.set("trust proxy", true)
+
+app.use(helmet())
 
 app.use(cookieParser(process.env.SECRET_COOKIE_KEY))
 app.use(express.static(join(__dirname, "public"), {
