@@ -10,7 +10,7 @@ const getIP = (req) => req.headers['x-forwarded-for'] ?? req.ip
 
 router.get('/signup', sessionParser(), (req, res) => {
     if (req.session) return res.redirect(302, "/")
-    res.sendFile(path.join(__dirname, 'html', 'signup.html'))
+    res.sendFile(path.join(__rootdir, 'html', 'signup.html'))
 })
 router.post('/signup',
     rateLimit({ keyGenerator: req => getIP(req), limit: 3, windowMs: 30 * 60 * 1000 }),
@@ -51,7 +51,7 @@ router.post('/signup',
 
 router.get('/login', sessionParser(), (req, res) => {
     if (req.session) return res.redirect(302, "/")
-    res.sendFile(path.join(__dirname, 'html', 'login.html'))
+    res.sendFile(path.join(__rootdir, 'html', 'login.html'))
 })
 router.post('/login', rateLimit({ keyGenerator: req => getIP(req), limit: 5, windowMs: 30 * 1000 }), sessionParser(), async (req, res) => {
     if (req.session) return res.status(403).json({ error: "Already logged in" })
@@ -74,7 +74,7 @@ router.post('/login', rateLimit({ keyGenerator: req => getIP(req), limit: 5, win
     return res.status(201).redirect('/')
 })
 
-router.get('/logout', sessionParser({ required: true }), (req, res) => res.sendFile(path.join(__dirname, 'html', 'logout.html')))
+router.get('/logout', sessionParser({ required: true }), (req, res) => res.sendFile(path.join(__rootdir, 'html', 'logout.html')))
 router.post('/logout', sessionParser({ required: true }), async (req, res) => {
     req.session.destroy(res)
     res.status(200).redirect('/')

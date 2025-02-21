@@ -1,7 +1,7 @@
 const router = require('express').Router()
 const path = require('path')
 
-router.get('/', (req, res) => res.sendFile(path.join(__dirname, 'html', 'index.html')))
+router.get('/', (req, res) => res.sendFile(path.join(__rootdir, 'html', 'index.html')))
 
 // Error handling middleware
 router.use((err, req, res, next) => {
@@ -10,6 +10,6 @@ router.use((err, req, res, next) => {
 })
 
 // 404 handler
-router.use((req, res) => res.status(404).sendFile(path.join(__dirname, 'html', '404.html')))
+router.use((req, res) => res.status(404).sendFile(path.join(__rootdir, 'html', '404.html')))
 
 module.exports = router;

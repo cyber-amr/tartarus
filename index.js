@@ -6,6 +6,8 @@ const cookieParser = require('cookie-parser')
 const { join } = require('path')
 const { readdirSync } = require('fs')
 
+global.__rootdir = join(__dirname)
+
 require("./db.js")
 
 const app = express()
@@ -16,13 +18,13 @@ app.set("trust proxy", true)
 app.use(helmet())
 
 app.use(cookieParser(process.env.SECRET_COOKIE_KEY))
-app.use(express.static(join(__dirname, "public"), {
+app.use(express.static(join(__rootdir, "public"), {
     maxAge: 600000 // 10 min
 }))
 app.use(express.json())
 
-readdirSync(join(__dirname, 'routes')).forEach(file => {
-    if (file.endsWith('.js')) app.use(require(join(__dirname, 'routes', file)))
+readdirSync(join(__rootdir, 'routes')).forEach(file => {
+    if (file.endsWith('.js')) app.use(require(join(__rootdir, 'routes', file)))
 })
 
 
