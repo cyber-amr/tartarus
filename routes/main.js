@@ -1,8 +1,6 @@
 const router = require('express').Router()
 const path = require('path')
 
-router.get('/', (req, res) => res.sendFile(path.join(__rootdir, 'html', 'index.html')))
-
 // Error handling middleware
 router.use((err, req, res, next) => {
     console.error(err.stack);
