@@ -10,119 +10,15 @@
   <meta property="og:image" content="https://amr-dev.info/studio.png">
   <link rel="icon" type="image/x-icon" href="icon.ico" sizes="any">
   <link rel="icon" type="image/svg+xml" href="icon.svg">
+  <link rel="stylesheet" href="assets/css/style.css">
+  <link rel="stylesheet" href="assets/css/home-page.css">
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-MWHPXGX9FN"></script>
   <script async src="assets/js/gtag.js"></script>
-  <style>
-    body {
-      background-color: #1a1b26;
-      color: #a9b3d6;
-      font-family: 'Courier New', 'Lucida Console', monospace;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-      margin: 0;
-      line-height: 1.6;
-      padding: 1rem;
-    }
-
-    .container {
-      background-color: #24283b;
-      padding: 2rem;
-      border-radius: 4px;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-      width: 100%;
-      max-width: 600px;
-    }
-
-    .prompt {
-      color: #6faaf6;
-      margin-bottom: 1rem;
-      font-size: 1.2em;
-    }
-
-    .ascii-art {
-      color: #6faaf6;
-      white-space: pre;
-      font-size: 14px;
-      margin-bottom: 2rem;
-      line-height: 1.3;
-      font-size: x-small;
-    }
-
-    .output {
-      color: #9ece6e;
-      margin-bottom: 1rem;
-    }
-
-    .error {
-      color: #f6666f;
-      margin-bottom: 1rem;
-    }
-
-    .blink {
-      animation: blink 0.5s step-start 0s infinite;
-    }
-
-    .image-container {
-      text-align: center;
-      margin: 2rem 0;
-    }
-
-    .image {
-      max-width: 300px;
-      border-radius: 8px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    }
-
-    @keyframes blink {
-      50% {
-        opacity: 0;
-      }
-    }
-
-    .progress {
-      margin: 1rem 0;
-      height: 20px;
-      background: #1a1b26;
-      border: 1px solid #393f69;
-      position: relative;
-    }
-
-    .progress-bar {
-      height: 100%;
-      background-color: #6faaf6;
-      width: 0;
-      animation: progress 2s ease-in-out infinite;
-    }
-
-    @keyframes progress {
-      0% {
-        width: 0;
-      }
-
-      50% {
-        width: 70%;
-      }
-
-      75% {
-        width: 85%;
-      }
-
-      90% {
-        width: 95%;
-      }
-
-      100% {
-        width: 95%;
-      }
-    }
-  </style>
 </head>
 
 <body>
   <div class="container">
-    <div class="prompt">$ ./tartarus --under-construction</div>
+    <div class="container-title">$ ./tartarus --under-construction</div>
     <div class="ascii-art"> _   _           _
 | | | |_ __   __| | ___ _ __
 | | | | '_ \ / _` |/ _ | '__|
@@ -133,7 +29,7 @@
 | |   / _ \| '_ \/ __| __| '__| | | |/ __| __| |/ _ \| '_ \
 | |__| (_) | | | \__ | |_| |  | |_| | (__| |_| | (_) | | | |
  \____\___/|_| |_|___/\__|_|   \__,_|\___|\__|_|\___/|_| |_|</div>
-    <div class="output">[INFO] Building new features and experiences</div>
+    <div class="success">[INFO] Building new features and experiences</div>
     <div class="error">[NOTICE] Site under construction</div>
     <div>Checking system status...</div>
     <div class="image-container">
@@ -142,9 +38,7 @@
     <div class="progress">
       <div class="progress-bar"></div>
     </div>
-    <div class="command">
-      Estimated launch date (Soon™): 2025 March
-    </div>
+    <div>Estimated launch date (Soon™): 2025 March</div>
   </div>
 </body>
 

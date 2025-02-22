@@ -1,0 +1,46 @@
+body {
+    background-color: #1a1b26;
+    color: #a9b3d6;
+    font-family: 'Courier New', 'Lucida Console', monospace;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    line-height: 1.6;
+    padding: 1rem;
+}
+
+.container {
+    background-color: #24283b;
+    padding: 2rem;
+    border-radius: 4px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    width: 100%;
+    max-width: 600px;
+}
+
+.container-title {
+    color: #6faaf6;
+    margin-bottom: 1rem;
+    font-size: 1.2em;
+}
+
+.success {
+    color: #9ece6e;
+}
+
+.error {
+    color: #f6666f;
+}
+
+.image-container {
+    text-align: center;
+    margin: 2rem 0;
+}
+
+.image {
+    max-width: 300px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
