@@ -10,6 +10,7 @@
   <meta property="og:image" content="https://amr-dev.info/studio.png">
   <link rel="icon" type="image/x-icon" href="icon.ico" sizes="any">
   <link rel="icon" type="image/svg+xml" href="icon.svg">
+  <link rel="stylesheet" href="assets/css/style.css">
   <script>let FIX_FF_FOUC;</script>
   <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-MWHPXGX9FN"></script>
@@ -19,230 +20,29 @@
     gtag('js', new Date());
     gtag('config', 'G-MWHPXGX9FN');
   </script>
-  <style>
-    body {
-      background-color: #1a1b26;
-      color: #a9b3d6;
-      font-family: 'Courier New', 'Lucida Console', monospace;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-      margin: 0;
-      line-height: 1.6;
-      padding: 1rem;
-    }
-
-    .login-container {
-      background-color: #24283b;
-      padding: 2rem;
-      border-radius: 4px;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-      width: 100%;
-      max-width: 600px;
-    }
-
-    .prompt {
-      color: #6faaf6;
-      margin-bottom: 2rem;
-      font-size: 1.2em;
-    }
-
-    .input-group {
-      margin-bottom: 1.5rem;
-      position: relative;
-    }
-
-    label {
-      display: block;
-      color: #6faaf6;
-      margin-bottom: 0.5rem;
-    }
-
-    input {
-      width: 100%;
-      padding: 0.5rem;
-      background-color: #1a1b26;
-      border: 1px solid #393f69;
-      color: #a9b3d6;
-      font-family: 'Courier New', 'Lucida Console', monospace;
-      box-sizing: border-box;
-    }
-
-    input:disabled {
-      opacity: 0.7;
-      cursor: not-allowed;
-    }
-
-    input:focus {
-      outline: none;
-      border-color: #6faaf6;
-    }
-
-    .status {
-      position: absolute;
-      right: 0;
-      top: 0;
-      color: #6faaf6;
-      font-size: 0.9em;
-      margin-top: 0.5rem;
-    }
-
-    .error {
-      color: #f6666f;
-    }
-
-    .success {
-      color: #9ece6e;
-    }
-
-    a {
-      color: #6faaf6;
-      text-decoration: none;
-    }
-
-    a:hover {
-      text-decoration: underline;
-    }
-
-    button {
-      width: 100%;
-      padding: 0.5rem;
-      background-color: #6faaf6;
-      color: #1a1b26;
-      border: none;
-      cursor: pointer;
-      font-family: 'Courier New', 'Lucida Console', monospace;
-      font-weight: bold;
-      margin-top: 1rem;
-    }
-
-    button:focus,
-    button:hover {
-      background-color: #3c66c3;
-    }
-
-    button:disabled {
-      background-color: #393f69;
-      cursor: not-allowed;
-      opacity: 0.7;
-    }
-
-    .cursor {
-      animation: blink 0.5s step-start 0s infinite;
-    }
-
-    @keyframes blink {
-      50% {
-        opacity: 0;
-      }
-    }
-
-    @keyframes spin {
-      0% {
-        transform: rotate(0deg);
-      }
-
-      100% {
-        transform: rotate(360deg);
-      }
-    }
-
-    .loading {
-      position: relative;
-      cursor: wait !important;
-    }
-
-    .loading::after {
-      content: "";
-      display: inline-block;
-      width: 10px;
-      height: 10px;
-      vertical-align: middle;
-      border: 2px solid #1a1b26;
-      border-top-color: transparent;
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
-    }
-
-    .loading .button-text {
-      display: none;
-    }
-
-    .forgot-password {
-      text-align: right;
-      margin-top: 0.5rem;
-      font-size: 0.9em;
-    }
-
-    .checkbox-group {
-      display: flex;
-      align-items: center;
-      margin: 1rem 0;
-    }
-
-    .checkbox-group input[type="checkbox"] {
-      width: auto;
-      margin-left: 1rem;
-      cursor: pointer;
-    }
-
-    .checkbox-group label {
-      display: inline;
-      margin: 0;
-      cursor: pointer;
-    }
-
-    input[type="checkbox"] {
-      appearance: none;
-      -webkit-appearance: none;
-      width: 16px;
-      height: 16px;
-      border: 1px solid #393f69;
-      background-color: #1a1b26;
-      border-radius: 2px;
-      position: relative;
-    }
-
-    input[type="checkbox"]:checked {
-      background-color: #6faaf6;
-    }
-
-    input[type="checkbox"]:checked::after {
-      content: "✓";
-      position: absolute;
-      color: #1a1b26;
-      font-size: 12px;
-      left: 4px;
-      top: -1px;
-    }
-  </style>
 </head>
 
 <body>
-  <div class="login-container">
-    <div class="prompt">$ ./login --enter-tartarus</div>
+  <div class="container">
+    <div class="container-title">$ ./login --enter-tartarus</div>
     <form id="loginForm" action="/login" method="POST">
       <div class="input-group">
         <label id="identifierLabel" for="identifier">username:~$</label>
         <input type="username" id="identifier" name="identifier" required>
-        <div class="status" id="identifierStatus">Enter username or email</div>
+        <div class="input-status" id="identifierStatus">Enter username or email</div>
       </div>
       <div class="input-group">
         <label for="password">password:~$</label>
         <input type="password" id="password" name="password" required>
-        <div class="status" id="passwordStatus"></div>
+        <div class="input-status" id="passwordStatus"></div>
       </div>
       <div class="checkbox-group">
         <label for="keepMeLoggedIn">keep_me_logged_in:~$</label>
         <input type="checkbox" id="keepMeLoggedIn" name="keepMeLoggedIn" checked>
       </div>
-      <div class="forgot-password">
-        <a href="/recovery">Forgot password?</a>
-      </div>
-      <div>New to the space? <a href="/signup">sign up</a> instead</div>
+      <div>Lost? try <a href="/signup">signing up</a> or <a href="/recovery">recover account</a></div>
       <button type="submit" id="submitButton" disabled>
-        <span class="button-text">LOGIN <span class="cursor">█</span></span>
+        <span class="button-text">LOGIN <span class="blink">█</span></span>
       </button>
     </form>
   </div>
@@ -305,7 +105,7 @@
         })
         .catch(err => {
           passwordStatus.textContent = "check your credentials"
-          passwordStatus.className = 'status error'
+          passwordStatus.className = 'input-status error'
           password.value = ""
           identifier.focus()
           valid.pass = false

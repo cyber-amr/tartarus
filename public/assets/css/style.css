@@ -38,6 +38,38 @@ input:focus {
     border-color: #6faaf6;
 }
 
+input[type="checkbox"] {
+    flex: none;
+    appearance: none;
+    -webkit-appearance: none;
+    width: 16px;
+    height: 16px;
+    border: 1px solid #393f69;
+    background-color: #1a1b26;
+    border-radius: 2px;
+    position: relative;
+}
+
+input[type="checkbox"]:checked {
+    background-color: #6faaf6;
+}
+
+input[type="checkbox"]:checked::after {
+    content: "✓";
+    position: absolute;
+    color: #1a1b26;
+    font-size: 12px;
+    left: 4px;
+    top: -1px;
+}
+
+input[type="checkbox"]:focus,
+input[type="checkbox"]:hover {
+    outline: none;
+    border-color: #6faaf6;
+    box-shadow: 0 0 0 2px rgba(111, 170, 246, 0.3);
+}
+
 a {
     color: #6faaf6;
     text-decoration: none;
@@ -96,6 +128,23 @@ button:disabled {
     position: relative;
 }
 
+.checkbox-group {
+    display: flex;
+    align-items: center;
+    margin: 1rem 0;
+}
+
+.checkbox-group input[type="checkbox"] {
+    width: auto;
+    margin-left: 1rem;
+    cursor: pointer;
+}
+
+.checkbox-group label {
+    display: inline;
+    margin: 0;
+    cursor: pointer;
+}
 
 .input-status {
     position: absolute;
