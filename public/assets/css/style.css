@@ -11,6 +11,71 @@ body {
     padding: 1rem;
 }
 
+label {
+    display: block;
+    color: #6faaf6;
+    margin-bottom: 0.5rem;
+}
+
+input {
+    flex: 1;
+    width: 100%;
+    padding: 0.5rem;
+    background-color: #1a1b26;
+    border: 1px solid #393f69;
+    color: #a9b3d6;
+    font-family: 'Courier New', 'Lucida Console', monospace;
+    box-sizing: border-box;
+}
+
+input:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+input:focus {
+    outline: none;
+    border-color: #6faaf6;
+}
+
+a {
+    color: #6faaf6;
+    text-decoration: none;
+}
+
+a:focus,
+a:hover {
+    text-decoration: underline;
+}
+
+button {
+    flex: 1;
+}
+
+button {
+    flex: 1;
+    width: 100%;
+    padding: 0.5rem;
+    background-color: #6faaf6;
+    color: #1a1b26;
+    border: none;
+    cursor: pointer;
+    font-family: 'Courier New', 'Lucida Console', monospace;
+    font-weight: bold;
+    margin-top: 1rem;
+}
+
+button:focus,
+button:hover {
+    background-color: #3c66c3;
+}
+
+button:disabled {
+    background-color: #393f69;
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
 .container {
     background-color: #24283b;
     padding: 2rem;
@@ -24,6 +89,47 @@ body {
     color: #6faaf6;
     margin-bottom: 1rem;
     font-size: 1.2em;
+}
+
+.input-group {
+    margin-bottom: 1.5rem;
+    position: relative;
+}
+
+
+.input-status {
+    position: absolute;
+    right: 0;
+    top: 0;
+    color: #6faaf6;
+    font-size: 0.9em;
+    margin-top: 0.5rem;
+}
+
+.loading {
+    position: relative;
+    cursor: wait !important;
+}
+
+.loading::after {
+    content: "";
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    vertical-align: middle;
+    border: 2px solid #1a1b26;
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+.loading .button-text {
+    display: none;
+}
+
+.optional {
+    color: #666699;
+    font-size: 0.8em;
 }
 
 .success {
@@ -43,4 +149,24 @@ body {
     max-width: 300px;
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.blink {
+    animation: blink 0.5s step-start 0s infinite;
+}
+
+@keyframes blink {
+    50% {
+        opacity: 0;
+    }
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
 }

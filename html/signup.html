@@ -10,6 +10,8 @@
   <meta property="og:image" content="https://amr-dev.info/studio.png">
   <link rel="icon" type="image/x-icon" href="icon.ico" sizes="any">
   <link rel="icon" type="image/svg+xml" href="icon.svg">
+  <link rel="stylesheet" href="assets/css/style.css">
+  <link rel="stylesheet" href="assets/css/signup-page.css">
   <script>let FIX_FF_FOUC;</script>
   <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-MWHPXGX9FN"></script>
@@ -19,214 +21,11 @@
     gtag('js', new Date());
     gtag('config', 'G-MWHPXGX9FN');
   </script>
-  <style>
-    body {
-      background-color: #1a1b26;
-      color: #a9b3d6;
-      font-family: 'Courier New', 'Lucida Console', monospace;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-      margin: 0;
-      line-height: 1.6;
-      padding: 1rem;
-    }
-
-    .signup-container {
-      background-color: #24283b;
-      padding: 2rem;
-      border-radius: 4px;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-      width: 100%;
-      max-width: 600px;
-    }
-
-    .prompt {
-      color: #6faaf6;
-      margin-bottom: 2rem;
-      font-size: 1.2em;
-    }
-
-    .input-group {
-      margin-bottom: 1.5rem;
-      position: relative;
-    }
-
-    label {
-      display: block;
-      color: #6faaf6;
-      margin-bottom: 0.5rem;
-    }
-
-    input {
-      width: 100%;
-      padding: 0.5rem;
-      background-color: #1a1b26;
-      border: 1px solid #393f69;
-      color: #a9b3d6;
-      font-family: 'Courier New', 'Lucida Console', monospace;
-      box-sizing: border-box;
-    }
-
-    input:disabled {
-      opacity: 0.7;
-      cursor: not-allowed;
-    }
-
-    input:focus {
-      outline: none;
-      border-color: #6faaf6;
-    }
-
-    .status {
-      position: absolute;
-      right: 0;
-      top: 0;
-      color: #6faaf6;
-      font-size: 0.9em;
-      margin-top: 0.5rem;
-    }
-
-    .error {
-      color: #f6666f;
-    }
-
-    .success {
-      color: #9ece6e;
-    }
-
-    a {
-      color: #6faaf6;
-      text-decoration: none;
-    }
-
-    a:hover {
-      text-decoration: underline;
-    }
-
-    button {
-      width: 100%;
-      padding: 0.5rem;
-      background-color: #6faaf6;
-      color: #1a1b26;
-      border: none;
-      cursor: pointer;
-      font-family: 'Courier New', 'Lucida Console', monospace;
-      font-weight: bold;
-      margin-top: 1rem;
-    }
-
-    button:focus,
-    button:hover {
-      background-color: #3c66c3;
-    }
-
-    button:disabled {
-      background-color: #393f69;
-      cursor: not-allowed;
-      opacity: 0.7;
-    }
-
-    .cursor {
-      animation: blink 0.5s step-start 0s infinite;
-    }
-
-    @keyframes blink {
-      50% {
-        opacity: 0;
-      }
-    }
-
-    @keyframes spin {
-      0% {
-        transform: rotate(0deg);
-      }
-
-      100% {
-        transform: rotate(360deg);
-      }
-    }
-
-    .loading {
-      position: relative;
-      cursor: wait !important;
-    }
-
-    .loading::after {
-      content: "";
-      display: inline-block;
-      width: 10px;
-      height: 10px;
-      vertical-align: middle;
-      border: 2px solid #1a1b26;
-      border-top-color: transparent;
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
-    }
-
-    .loading .button-text {
-      display: none;
-    }
-
-    .optional {
-      color: #666699;
-      font-size: 0.8em;
-    }
-
-    .progress-steps {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 2rem;
-      position: relative;
-    }
-
-    .step {
-      flex: 1;
-      text-align: center;
-      color: #393f69;
-      position: relative;
-      padding: 0.5rem;
-    }
-
-    .step.active {
-      color: #6faaf6;
-    }
-
-    .step.completed {
-      color: #9ece6e;
-    }
-
-    .step-line {
-      position: absolute;
-      top: 50%;
-      left: 0;
-      right: 0;
-      height: 2px;
-      background: #393f69;
-      z-index: 0;
-    }
-
-    .step-content {
-      position: relative;
-      z-index: 1;
-      background: #24283b;
-      padding: 0 0.5rem;
-    }
-
-    .form-step {
-      display: none;
-    }
-
-    .form-step.active {
-      display: block;
-    }
-  </style>
 </head>
 
 <body>
-  <div class="signup-container">
-    <div class="prompt" id="prompt">$ ./signup --new-user</div>
+  <div class="container">
+    <div class="container-title" id="containerTitle">$ ./signup --new-user</div>
     <div class="progress-steps">
       <div class="step-line"></div>
       <div class="step" id="step1">
@@ -244,11 +43,11 @@
       <div class="input-group">
         <label for="initialEmail">email:~$</label>
         <input type="email" id="initialEmail" name="email" required>
-        <div class="status" id="initialEmailStatus"></div>
+        <div class="input-status" id="initialEmailStatus"></div>
       </div>
       <div>Have an account? <a href="/login">login</a> instead</div>
       <button type="submit" id="emailSubmitButton" disabled>
-        <span class="button-text" id="emailSubmitButtonText">NEXT <span class="cursor">█</span></span>
+        <span class="button-text" id="emailSubmitButtonText">NEXT <span class="blink">█</span></span>
       </button>
     </form>
 
@@ -256,15 +55,15 @@
       <div class="input-group">
         <label for="unverifiedEmail">email:~$</label>
         <input type="email" id="unverifiedEmail" name="unverifiedEmail" required disabled>
-        <div class="status success" id="unverifiedEmailStatus">✓</div>
+        <div class="input-status success" id="unverifiedEmailStatus">✓</div>
       </div>
       <div class="input-group">
         <label for="token">verification_code:~$</label>
         <input type="text" id="token" name="token" required>
-        <div class="status" id="tokenStatus"></div>
+        <div class="input-status" id="tokenStatus"></div>
       </div>
       <button type="submit" id="verifyButton" disabled>
-        <span class="button-text">VERIFY <span class="cursor">█</span></span>
+        <span class="button-text">VERIFY <span class="blink">█</span></span>
       </button>
     </form>
 
@@ -272,35 +71,35 @@
       <div class="input-group">
         <label for="verifiedEmail">email:~$</label>
         <input type="email" id="verifiedEmail" name="verifiedEmail" required disabled>
-        <div class="status success" id="verifiedEmailStatus">✓</div>
+        <div class="input-status success" id="verifiedEmailStatus">✓</div>
       </div>
       <div class="input-group">
         <label for="username">username:~$</label>
         <input type="text" id="username" name="username" required>
-        <div class="status" id="usernameStatus"></div>
+        <div class="input-status" id="usernameStatus"></div>
       </div>
       <div class="input-group">
         <label for="password">password:~$</label>
         <input type="password" id="password" name="password" required>
-        <div class="status" id="passwordStatus"></div>
+        <div class="input-status" id="passwordStatus"></div>
       </div>
       <div class="input-group">
         <label for="confirmPassword">confirm_password:~$</label>
         <input type="password" id="confirmPassword" name="confirmPassword" required>
-        <div class="status" id="confirmPasswordStatus"></div>
+        <div class="input-status" id="confirmPasswordStatus"></div>
       </div>
       <div class="input-group">
         <label for="birthDate">birth_date:~$</label>
         <input type="date" min="1919-01-01" max="2012-01-01" id="birthDate" name="birthDate" required>
-        <div class="status" id="birthDateStatus"></div>
+        <div class="input-status" id="birthDateStatus"></div>
       </div>
       <div class="input-group">
         <label for="displayName">display_name:~$ <span class="optional">(optional)</span></label>
         <input type="text" id="displayName" name="displayName">
-        <div class="status" id="displayNameStatus"></div>
+        <div class="input-status" id="displayNameStatus"></div>
       </div>
       <button type="submit" id="submitButton" disabled>
-        <span class="button-text">CREATE ACCOUNT <span class="cursor">█</span></span>
+        <span class="button-text">CREATE ACCOUNT <span class="blink">█</span></span>
       </button>
     </form>
   </div>
@@ -314,12 +113,12 @@
       // first step enter email then redirect to signup/?email=<email>
       document.getElementById('emailForm').classList.add('active')
       document.getElementById('step1').classList.add('active')
-      document.getElementById('prompt').textContent = "$ ./signup --check-email"
+      document.getElementById('containerTitle').textContent = "$ ./signup --check-email"
 
       if (params.get('status') == 'expired') {
         const status = document.getElementById('initialEmailStatus')
         status.textContent = 'Expired Verification ✗'
-        status.className = 'status error'
+        status.className = 'input-status error'
       }
 
       let emailTimer
@@ -336,14 +135,14 @@
 
         if (!email.length) {
           status.textContent = ""
-          status.className = 'status'
+          status.className = 'input-status'
           return
         }
 
         if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email)) return
 
         status.textContent = 'Checking...'
-        status.className = 'status'
+        status.className = 'input-status'
         emailButtonText.childNodes[0].nodeValue = 'NEXT '
 
         clearTimeout(emailTimer)
@@ -358,12 +157,12 @@
               if (e.target.value === email) {
                 if (data.registered) {
                   status.textContent = 'Already registered'
-                  status.className = 'status'
+                  status.className = 'input-status'
                   emailButtonText.childNodes[0].nodeValue = 'LOGIN '
                   emailSubmitButton.disabled = false
                 } else {
                   status.textContent = '✓'
-                  status.className = 'status success'
+                  status.className = 'input-status success'
                   emailButtonText.childNodes[0].nodeValue = 'NEXT '
                   emailSubmitButton.disabled = false
                 }
@@ -372,7 +171,7 @@
             .catch(() => {
               if (e.target.value === email) {
                 status.textContent = 'Error checking ✗'
-                status.className = 'status error'
+                status.className = 'input-status error'
               }
             })
         }, 1500)
@@ -401,12 +200,12 @@
             window.location.href = `/signup?email=${encodeURIComponent(email)}`
           } else {
             status.textContent = data.error ? data.error + " ✗" : "Sending email failed ✗"
-            status.className = 'status error'
+            status.className = 'input-status error'
           }
         }).catch((e) => {
           alert(e)
           status.textContent = 'Error occurred ✗'
-          status.className = 'status error'
+          status.className = 'input-status error'
         }).finally(() => {
           submitButton.classList.remove('loading')
           submitButton.disabled = false
@@ -417,7 +216,7 @@
       document.getElementById('verificationForm').classList.add('active')
       document.getElementById('step1').classList.add('completed')
       document.getElementById('step2').classList.add('active')
-      document.getElementById('prompt').textContent = "$ ./signup --verify-email"
+      document.getElementById('containerTitle').textContent = "$ ./signup --verify-email"
 
       document.getElementById('unverifiedEmail').value = emailParam
 
@@ -432,7 +231,7 @@
         e.target.value = token
         verifyButton.disabled = token.length != 8
         status.textContent = ''
-        status.className = 'status'
+        status.className = 'input-status'
       })
 
       document.getElementById('verificationForm').addEventListener('submit', (e) => {
@@ -454,12 +253,12 @@
             window.location.href = `/signup?email=${encodeURIComponent(emailParam)}&token=${encodeURIComponent(token)}`
           } else {
             status.textContent = data.error ? data.error + " ✗" : "invalid code ✗"
-            status.className = 'status error'
+            status.className = 'input-status error'
           }
         }).catch((e) => {
           alert(e)
           status.textContent = 'Error occurred ✗'
-          status.className = 'status error'
+          status.className = 'input-status error'
         }).finally(() => {
           submitButton.classList.remove('loading')
           submitButton.disabled = false
@@ -479,7 +278,7 @@
       document.getElementById('step1').classList.add('completed')
       document.getElementById('step2').classList.add('completed')
       document.getElementById('step3').classList.add('active')
-      document.getElementById('prompt').textContent = "$ ./signup --new-user"
+      document.getElementById('containerTitle').textContent = "$ ./signup --new-user"
 
       document.getElementById('verifiedEmail').value = emailParam
 
@@ -505,21 +304,21 @@
         validationState.username = false
         if (!username.length) {
           status.textContent = ""
-          status.className = 'status'
+          status.className = 'input-status'
           return
         }
         if (username.length > 16) {
           status.textContent = "max 16 characters ✗"
-          status.className = 'status error'
+          status.className = 'input-status error'
           return
         }
         if (!/^[A-Za-z0-9_]+$/.test(username)) {
           status.textContent = "can only contain A-z, 0-9 and _ ✗"
-          status.className = 'status error'
+          status.className = 'input-status error'
           return
         }
         status.textContent = 'Checking...'
-        status.className = 'status'
+        status.className = 'input-status'
 
         clearTimeout(usernameTimer)
         usernameTimer = setTimeout(() => {
@@ -533,21 +332,21 @@
               if (e.target.value === username) {
                 if (data.available) {
                   status.textContent = 'Available ✓'
-                  status.className = 'status success'
+                  status.className = 'input-status success'
                   validationState.username = true
                 } else if (data.available === false) {
                   status.textContent = 'Taken ✗'
-                  status.className = 'status error'
+                  status.className = 'input-status error'
                 } else {
                   status.textContent = 'Error checking ✗'
-                  status.className = 'status error'
+                  status.className = 'input-status error'
                 }
               }
             })
             .catch(() => {
               if (e.target.value === username) {
                 status.textContent = 'Error checking ✗'
-                status.className = 'status error'
+                status.className = 'input-status error'
               }
             })
         }, 1500)
@@ -561,22 +360,22 @@
 
         if (!password.length) {
           status.textContent = ""
-          status.className = 'status'
+          status.className = 'input-status'
         } else if (!/[a-zA-Z]+/.test(password)) {
           status.textContent = 'must have a letter ✗'
-          status.className = 'status error'
+          status.className = 'input-status error'
         } else if (!/\d+/.test(password)) {
           status.textContent = 'must have a number ✗'
-          status.className = 'status error'
+          status.className = 'input-status error'
         } else if (!/[^a-zA-Z0-9]+/.test(password)) {
           status.textContent = 'must have a special character ✗'
-          status.className = 'status error'
+          status.className = 'input-status error'
         } else if (!/^(?=.*[a-zA-Z])(?=.*\d)(?=.*[^a-zA-Z0-9]).{8,32}$/.test(password)) {
           status.textContent = 'must be between 8-32 characters ✗'
-          status.className = 'status error'
+          status.className = 'input-status error'
         } else {
           status.textContent = '✓'
-          status.className = 'status success'
+          status.className = 'input-status success'
           validationState.password = true
         }
 
@@ -591,16 +390,16 @@
 
         if (!password.length || !confirmPassword.length) {
           status.textContent = ''
-          status.className = 'status'
+          status.className = 'input-status'
           return
         }
         if (password === confirmPassword) {
           status.textContent = '✓'
-          status.className = 'status success'
+          status.className = 'input-status success'
           validationState.confirmPassword = true
         } else {
           status.textContent = 'Passwords do not match ✗'
-          status.className = 'status error'
+          status.className = 'input-status error'
         }
       })
 
@@ -611,10 +410,10 @@
         validationState.birthDate = isValid
         if (isValid) {
           status.textContent = "✓"
-          status.className = 'status success'
+          status.className = 'input-status success'
         } else {
           status.textContent = "You must be +13y and -99y ✗"
-          status.className = 'status error'
+          status.className = 'input-status error'
         }
       })
 
@@ -624,14 +423,14 @@
         validationState.displayName = false
         if (!displayName.length) {
           status.textContent = ''
-          status.className = 'status'
+          status.className = 'input-status'
           validationState.displayName = true
         } else if (displayName.length > 16) {
           status.textContent = 'max 16 characters ✗'
-          status.className = 'status error'
+          status.className = 'input-status error'
         } else {
           status.textContent = '✓'
-          status.className = 'status success'
+          status.className = 'input-status success'
           validationState.displayName = true
         }
       })

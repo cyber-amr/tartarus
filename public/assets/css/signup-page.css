@@ -1,0 +1,47 @@
+.progress-steps {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 2rem;
+    position: relative;
+}
+
+.step {
+    flex: 1;
+    text-align: center;
+    color: #393f69;
+    position: relative;
+    padding: 0.5rem;
+}
+
+.step.active {
+    color: #6faaf6;
+}
+
+.step.completed {
+    color: #9ece6e;
+}
+
+.step-line {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: #393f69;
+    z-index: 0;
+}
+
+.step-content {
+    position: relative;
+    z-index: 1;
+    background: #24283b;
+    padding: 0 0.5rem;
+}
+
+.form-step {
+    display: none;
+}
+
+.form-step.active {
+    display: block;
+}
