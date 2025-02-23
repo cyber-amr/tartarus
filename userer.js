@@ -16,7 +16,7 @@ class User {
     }
 
     static async get({ _id, username }) {
-        const data = await db.collection("users").findOne({ _id, username })
+        const data = await db.collection("users").findOne({ _id, username }, { collation: { locale: 'en', strength: 2 } })
         return data ? new User(data) : null
     }
 
@@ -34,7 +34,7 @@ class SecretUser {
     }
 
     static async get({ _id, email }) {
-        const data = await db.collection("secrets").findOne({ _id, email })
+        const data = await db.collection("secrets").findOne({ _id, email }, { collation: { locale: 'en', strength: 2 } })
         return data ? new SecretUser(data) : null
     }
 
