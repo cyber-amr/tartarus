@@ -67,10 +67,10 @@ class SecretUser {
 
 const q = new Set()
 async function createUser({ username, email, password, birthDate, displayName }, ip) {
-    if (q.has(username) || !!(await db.collection("users").findOne({ username }))) return { errorCode: 409, error: 'username already in use, try another' }
+    if (await User.exists({ username }) || q.has(username)) return { errorCode: 409, error: 'username already in use, try another' }
     q.add(username)
 
-    if (q.has(email) || !!(await db.collection("secrets").findOne({ email }))) {
+    if (await SecretUser.exists({ email }) || q.has(email)) {
         q.delete(username)
         return { errorCode: 409, error: 'email already registered, try logging-in' }
     }
