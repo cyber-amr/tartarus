@@ -2,7 +2,7 @@ const router = require('express').Router()
 const path = require('path')
 const { sessionParser } = require('../sessioner')
 const { rateLimit } = require('express-rate-limit')
-const { isEmail, isToken, isUsername, isPassword, isDateIn, isDisplayName } = require('../validater')
+const { isStr, isEmail, isToken, isUsername, isPassword, isDateIn, isDisplayName } = require('../validater')
 const { isValidVerification, destroyVerification } = require('../emailer')
 const { createUser, login } = require('../userer')
 

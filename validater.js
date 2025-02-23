@@ -2,6 +2,7 @@
 const isStr = (x) => x && typeof x === 'string'
 
 module.exports = {
+    isStr,
     isUsername: (x) => isStr(x) && /^[a-z0-9_]{1,16}$/i.test(x),
     isDisplayName: (x) => isStr(x) && /^.{0,16}$/.test(x),
 
