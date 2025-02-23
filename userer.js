@@ -15,8 +15,8 @@ class User {
         this.displayName = data.displayName
     }
 
-    static async get(query) {
-        const data = await db.collection("users").findOne(query)
+    static async get({ _id, username }) {
+        const data = await db.collection("users").findOne({ _id, username })
         return data ? new User(data) : null
     }
 
@@ -33,8 +33,8 @@ class SecretUser {
         this.loginIPs = data.loginIPs
     }
 
-    static async get(query) {
-        const data = await db.collection("secrets").findOne(query)
+    static async get({ _id, email }) {
+        const data = await db.collection("secrets").findOne({ _id, email })
         return data ? new SecretUser(data) : null
     }
 
