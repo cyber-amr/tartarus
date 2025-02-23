@@ -15,6 +15,17 @@ class User {
         this.displayName = data.displayName
     }
 
+    static async exists({ _id, username }) {
+        return await db.collection('users').find(
+            { _id, username },
+            {
+                collation: { locale: 'en', strength: 2 },
+                projection: { _id: 1 },
+                limit: 1
+            }
+        ).hasNext()
+    }
+
     static async get({ _id, username }) {
         const data = await db.collection("users").findOne({ _id, username }, { collation: { locale: 'en', strength: 2 } })
         return data ? new User(data) : null
@@ -31,6 +42,17 @@ class SecretUser {
         this.email = data.email
         this.password = data.password
         this.loginIPs = data.loginIPs
+    }
+
+    static async exists({ _id, email }) {
+        return await db.collection('users').find(
+            { _id, email },
+            {
+                collation: { locale: 'en', strength: 2 },
+                projection: { _id: 1 },
+                limit: 1
+            }
+        ).hasNext()
     }
 
     static async get({ _id, email }) {
