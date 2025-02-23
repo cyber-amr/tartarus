@@ -154,7 +154,7 @@ module.exports.sendVerificationEmail = async (email, reason) => {
         await db.collection('verifications').deleteOne(stored)
         stored = undefined
     }
-    const { token } = stored ?? await this.createVerification(email, reason)
+    let { token } = stored ?? await this.createVerification(email, reason)
     token = token.toUpperCase()
 
     const send = SIGNABLE_PROVIDERS.includes(email.split('@')[1]) ? this.sendSignedEmail ?? this.sendEmail : this.sendEmail
