@@ -15,7 +15,7 @@ router.post('/api/available-username', async (req, res) => {
     const username = req.body?.username
     if (!isUsername(username)) return res.status(400).json({ error: 'username is required, max 16 characters of A-z, 0-9 and _ only' })
 
-    res.json({ available: !User.exists({ username }) })
+    res.json({ available: !await User.exists({ username }) })
 })
 
 router.post('/api/registered-email', async (req, res) => {
@@ -23,7 +23,7 @@ router.post('/api/registered-email', async (req, res) => {
     if (!email) return res.status(400).json({ error: 'email is required' })
     if (!isEmail(email)) return res.status(400).json({ error: 'Unsupported email format' })
 
-    res.json({ registered: SecretUser.exists({ email }) })
+    res.json({ registered: await SecretUser.exists({ email }) })
 })
 
 module.exports = router;
