@@ -117,7 +117,6 @@ async function login({ password, username, email, keepLogin, ip }) {
         secretUser = await SecretUser.get({ email })
     }
 
-    // vulnerable but who gives a fuck
     if (secretUser?.password.hash !== hash(secretUser?._id + password + process.env.SECRET_SALT ?? "")) return { errorCode: 401, error: "Unauthorized" }
 
     return await createSession({ userId: secretUser._id, ip, maxAge: keepLogin ? 30 * 24 * 60 * 60 * 1000 : undefined }) // 30 days
