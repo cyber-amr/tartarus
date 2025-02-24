@@ -294,7 +294,7 @@
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: emailParam, token: tokenParam })
       }).then(res => res.text()).then(txt => {
-        if (!txt == 'true') window.location.href = `/signup?status=expired`
+        if (txt === 'false') window.location.href = `/signup?status=expired`
       }).catch(() => { })
       document.getElementById('signupForm').classList.add('active')
       document.getElementById('step1').classList.add('completed')
