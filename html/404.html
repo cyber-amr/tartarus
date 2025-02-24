@@ -10,6 +10,8 @@
   <meta property="og:image" content="https://amr-dev.info/studio.png">
   <link rel="icon" type="image/x-icon" href="icon.ico" sizes="any">
   <link rel="icon" type="image/svg+xml" href="icon.svg">
+  <link rel="stylesheet" href="/assets/css/style.css">
+  <link rel="stylesheet" href="/assets/css/404-page.css">
   <script>
     /*to prevent flashing of unstyled content on Firefox*/
     let FIX_FF_FOUC;
@@ -22,106 +24,28 @@
     gtag('js', new Date());
     gtag('config', 'G-MWHPXGX9FN');
   </script>
-  <style>
-    body {
-      background-color: #1a1b26;
-      color: #a9b3d6;
-      font-family: 'Courier New', 'Lucida Console', monospace;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      margin: 0;
-      line-height: 1.6;
-    }
-
-    .error-container {
-      background-color: #24283b;
-      padding: 2rem;
-      border-radius: 4px;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-      width: 100%;
-      max-width: 600px;
-    }
-
-    .prompt {
-      color: #6faaf6;
-      margin-bottom: 1rem;
-      font-size: 1.2em;
-    }
-
-    .ascii-art {
-      color: #6faaf6;
-      white-space: pre;
-      font-size: 14px;
-      margin-bottom: 2rem;
-      line-height: 1.3;
-    }
-
-    .error-code {
-      color: #f6666f;
-      font-weight: bold;
-      margin-bottom: 1rem;
-    }
-
-    button {
-      width: 100%;
-      padding: 0.5rem;
-      margin-top: 2rem;
-      background-color: #6faaf6;
-      color: #1a1b26;
-      border: none;
-      cursor: pointer;
-      font-family: 'Courier New', 'Lucida Console', monospace;
-      font-weight: bold;
-    }
-
-    button:focus,
-    button:hover {
-      background-color: #3c66c3;
-    }
-
-    .cursor {
-      animation: blink 0.5s step-start 0s infinite;
-    }
-
-    @keyframes blink {
-      50% {
-        opacity: 0;
-      }
-    }
-  </style>
 </head>
 
 <body>
-  <div class="error-container">
-    <div class="prompt">$ ./requested_page.html --page-not-found</div>
+  <div class="container">
+    <div class="container-title">$ ./requested_page.html --page-not-found</div>
     <div class="ascii-art">  _  _    ___  _  _
  | || |  / _ \| || |
  | || |_| | | | || |_
  |__   _| |_| |__   _|
     |_|  \___/   |_|</div>
-    <div class="error-code">[ERROR] Process terminated with code 404... |</div>
+    <div class="error info">[ERROR] Process terminated with code 404... <span class="spinner-slash"></span></div>
     <div class="error-message">
       The page you are looking for seems to have been moved, deleted, or never existed.
       Check the URL for typos
     </div>
-    <button onclick="window.location.href='/'">RETURN TO HOME <span class="cursor">█</span></button>
+    <button onclick="window.location.href='/'">RETURN TO HOME <span class="blink">█</span></button>
   </div>
 
   <script>
-    const errorText = document.querySelector('.error-code');
-    const characters = ['|', '/', '─', '\\'];
-    let i = 0;
-
-    const filePath = window.location.pathname.split("/")
-    filePath.shift()
-    document.querySelector(".prompt").textContent = `$ ./${filePath.join("/")}.html --page-not-found`
-
-    setInterval(() => {
-      errorText.textContent = '[ERROR] Process terminated with code 404... ' + characters[i];
-      i = (i + 1) % characters.length;
-    }, 250);
+    let filePath = window.location.pathname.split("/").splice(1).join("/")
+    if (!filePath.endsWith('.html')) filePath + '.html'
+    document.querySelector(".container-title").textContent = filePath == '404.html' ? `$ ./404.html --page-kinda-found` : `$ ./${filePath} --page-not-found`
   </script>
 </body>
 
