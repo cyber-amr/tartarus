@@ -45,7 +45,7 @@ router.post('/signup',
 
         destroyVerification(email, { token })
 
-        res.status(201).redirect(`/login?username=${username}`)
+        res.status(201).send('successful')
     }
 )
 
@@ -71,13 +71,13 @@ router.post('/login', rateLimit({ keyGenerator: req => getIP(req), limit: 5, win
         path: '/',
         expires: expireDate
     })
-    return res.status(201).redirect('/')
+    return res.status(201).send('successful')
 })
 
 router.get('/logout', sessionParser({ required: true }), (req, res) => res.sendFile(path.join(__rootdir, 'html', 'logout.html')))
 router.post('/logout', sessionParser({ required: true }), async (req, res) => {
     req.session.destroy(res)
-    res.status(200).redirect('/')
+    res.status(200).send('successful')
 })
 
 router.post('/request-verification/', sessionParser(), rateLimit({
