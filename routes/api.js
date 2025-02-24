@@ -11,8 +11,6 @@ router.use(rateLimit({
     windowMs: 30 * 1000
 }))
 
-router.get('/test', async (req, res) => res.send('ok'))
-
 router.post('/available-username', async (req, res) => {
     const username = req.body?.username
     if (!isUsername(username)) return res.status(400).json({ error: 'username is required, max 16 characters of A-z, 0-9 and _ only' })
