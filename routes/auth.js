@@ -105,7 +105,7 @@ router.post('/is-valid-verification', sessionParser(), rateLimit({
     skipSuccessfulRequests: true,
     limit: 3,
     windowMs: 30 * 60 * 1000,
-}), (req, res) => {
+}), async (req, res) => {
     if (req.session) return res.status(403).send('Forbidden')
 
     const email = req.body?.email
@@ -113,7 +113,7 @@ router.post('/is-valid-verification', sessionParser(), rateLimit({
 
     if (!isEmail(email) || !isToken(token)) return res.status(400).send('email and token are required')
 
-    isValidVerification(email, token).then(isValid => res.status(200).send(isValid))
+    res.status(200).send(await isValidVerification(email, token))
 })
 
 module.exports = router;
