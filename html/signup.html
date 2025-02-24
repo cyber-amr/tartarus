@@ -127,6 +127,8 @@
 
       initialEmailInput.focus()
 
+      const checked = new Map()
+
       initialEmailInput.addEventListener('input', (e) => {
         const email = e.target.value
         const status = document.getElementById('initialEmailStatus')
@@ -145,6 +147,21 @@
         status.className = 'input-status'
         emailButtonText.childNodes[0].nodeValue = 'NEXT '
 
+        if (checked.has(email.toLowerCase())) {
+          if (checked.get(email.toLowerCase())) {
+            status.textContent = 'Already registered'
+            status.className = 'input-status'
+            emailButtonText.childNodes[0].nodeValue = 'LOGIN '
+            emailSubmitButton.disabled = false
+          } else {
+            status.textContent = '✓'
+            status.className = 'input-status success'
+            emailButtonText.childNodes[0].nodeValue = 'NEXT '
+            emailSubmitButton.disabled = false
+          }
+          return
+        }
+
         clearTimeout(emailTimer)
         emailTimer = setTimeout(() => {
           fetch('/api/is-registered-email', {
@@ -156,17 +173,19 @@
             .then(txt => {
               if (e.target.value === email) {
                 if (txt == 'true') {
+                  checked.set(email.toLowerCase(), true)
                   status.textContent = 'Already registered'
                   status.className = 'input-status'
                   emailButtonText.childNodes[0].nodeValue = 'LOGIN '
                   emailSubmitButton.disabled = false
                 } else if (txt == 'false') {
+                  checked.set(email.toLowerCase(), false)
                   status.textContent = '✓'
                   status.className = 'input-status success'
                   emailButtonText.childNodes[0].nodeValue = 'NEXT '
                   emailSubmitButton.disabled = false
                 } else {
-                  status.textContent = 'Error checking ✗'
+                  status.textContent = txt = ' ✗'
                   status.className = 'input-status error'
                 }
               }
@@ -177,7 +196,7 @@
                 status.className = 'input-status error'
               }
             })
-        }, 1500)
+        }, 500)
       })
 
       document.getElementById('emailForm').addEventListener('submit', (e) => {
@@ -300,6 +319,8 @@
       const submitButton = document.getElementById('submitButton')
       setInterval(() => submitButton.disabled = !Object.values(validationState).every(v => v === true), 100)
 
+      const checked = new Map()
+
       let usernameTimer
       document.getElementById('username').addEventListener('input', (e) => {
         const username = e.target.value
@@ -323,6 +344,18 @@
         status.textContent = 'Checking...'
         status.className = 'input-status'
 
+        if (checked.has(username.toLowerCase())) {
+          if (checked.get(username.toLowerCase())) {
+            status.textContent = 'Available ✓'
+            status.className = 'input-status success'
+            validationState.username = true
+          } else {
+            status.textContent = 'Taken ✗'
+            status.className = 'input-status error'
+          }
+          return
+        }
+
         clearTimeout(usernameTimer)
         usernameTimer = setTimeout(() => {
           fetch('/api/is-available-username', {
@@ -334,10 +367,12 @@
             .then(txt => {
               if (e.target.value === username) {
                 if (txt == 'true') {
+                  checked.set(username.toLowerCase(), true)
                   status.textContent = 'Available ✓'
                   status.className = 'input-status success'
                   validationState.username = true
                 } else if (txt == 'false') {
+                  checked.set(username.toLowerCase(), false)
                   status.textContent = 'Taken ✗'
                   status.className = 'input-status error'
                 } else {
@@ -352,7 +387,7 @@
                 status.className = 'input-status error'
               }
             })
-        }, 1500)
+        }, 500)
       })
 
       document.getElementById("password").addEventListener('input', (e) => {
