@@ -32,7 +32,7 @@ app.use(express.json())
 
 app.use(require(join(__rootdir, 'routes', 'auth')))
 app.use('/api', require(join(__rootdir, 'routes', 'api')))
-app.use(require(join(__rootdir, 'routes', 'private-api')))
+app.use('/api/private', require(join(__rootdir, 'routes', 'private-api')))
 app.use(require(join(__rootdir, 'routes', 'main')))
 
 const server = app.listen(PORT, () => {
