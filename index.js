@@ -30,10 +30,10 @@ app.use(express.static(join(__rootdir, "public"), {
 }))
 app.use(express.json())
 
-readdirSync(join(__rootdir, 'routes')).forEach(file => {
-    if (file.endsWith('.js')) app.use(require(join(__rootdir, 'routes', file)))
-})
-
+app.use(require(join(__rootdir, 'routes', 'auth')))
+app.use(require(join(__rootdir, 'routes', 'api')))
+app.use(require(join(__rootdir, 'routes', 'private-api')))
+app.use(require(join(__rootdir, 'routes', 'main')))
 
 const server = app.listen(PORT, () => {
     console.log(`Web server running at http://localhost:${PORT}`)
