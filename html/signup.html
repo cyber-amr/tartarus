@@ -191,7 +191,7 @@
         submitButton.classList.add('loading')
         submitButton.disabled = true
 
-        fetch('/verification/request', {
+        fetch('request-verification', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ email })
@@ -244,7 +244,7 @@
         submitButton.classList.add('loading')
         submitButton.disabled = true
 
-        fetch('/verification/is-valid', {
+        fetch('/is-valid-verification', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ email: emailParam, token })
@@ -267,7 +267,7 @@
 
     } else {
       // third step enter the rest of the details and send POST to /signup then redirect to home
-      fetch('/verification/is-valid', {
+      fetch('/is-valid-verification', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: emailParam, token: tokenParam })
@@ -460,10 +460,11 @@
           if (res.ok) {
             window.location.href = `/login?email=${encodeURIComponent(data.username)}`
           } else {
-            res.json().then((({ error, redirect }) => {
+            res.json().then(({ error, redirect }) => {
               alert(`${error}\n\n✗ Error creating account. Please try again, or contact amr@programmer.net`)
               if (redirect) window.location.href = redirect
-            }))
+            })
+              .catch(() => alert(`(${res.status}) ${res.statusText}\n\n✗ Error creating account. Please try again, or contact amr@programmer.net`))
           }
         }).catch(error => alert(`${error}\n\n✗ Error creating account. Please try again, or contact amr@programmer.net`))
           .finally(() => {
