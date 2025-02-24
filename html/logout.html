@@ -61,7 +61,7 @@
   </div>
 
   <script>
-    fetch('/private-api/user', { method: 'GET', headers: { 'Content-Type': 'application/json' } }).then(res => res.json()).then(user => {
+    fetch('/api/private/user', { method: 'GET', headers: { 'Content-Type': 'application/json' } }).then(res => res.json()).then(user => {
       document.getElementById('username').textContent = user.username
       document.getElementById('email').textContent = user.email
       document.getElementById('displayName').textContent = user.displayName
@@ -70,7 +70,7 @@
 
     let updateDurationInterval
 
-    fetch('/private-api/session', { method: 'GET', headers: { 'Content-Type': 'application/json' } }).then(res => res.json()).then(session => {
+    fetch('/api/private/session', { method: 'GET', headers: { 'Content-Type': 'application/json' } }).then(res => res.json()).then(session => {
       document.getElementById('lastActive').textContent = `${(new Date(session.lastActive)).toLocaleDateString('en', {
         weekday: "long",
         day: "2-digit",

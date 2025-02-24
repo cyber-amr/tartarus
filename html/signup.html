@@ -147,24 +147,27 @@
 
         clearTimeout(emailTimer)
         emailTimer = setTimeout(() => {
-          fetch('/api/registered-email', {
+          fetch('/api/is-registered-email', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ email })
           })
-            .then(res => res.json())
-            .then(data => {
+            .then(res => res.text())
+            .then(txt => {
               if (e.target.value === email) {
-                if (data.registered) {
+                if (txt == 'true') {
                   status.textContent = 'Already registered'
                   status.className = 'input-status'
                   emailButtonText.childNodes[0].nodeValue = 'LOGIN '
                   emailSubmitButton.disabled = false
-                } else {
+                } else if (txt == 'false') {
                   status.textContent = '✓'
                   status.className = 'input-status success'
                   emailButtonText.childNodes[0].nodeValue = 'NEXT '
                   emailSubmitButton.disabled = false
+                } else {
+                  status.textContent = 'Error checking ✗'
+                  status.className = 'input-status error'
                 }
               }
             })
@@ -195,11 +198,11 @@
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ email })
-        }).then(res => res.json()).then(data => {
-          if (data.sent) {
+        }).then(res => res.text()).then(txt => {
+          if (txt == 'successful') {
             window.location.href = `/signup?email=${encodeURIComponent(email)}`
           } else {
-            status.textContent = data.error ? data.error + " ✗" : "Sending email failed ✗"
+            status.textContent = txt + " ✗"
             status.className = 'input-status error'
           }
         }).catch((e) => {
@@ -248,11 +251,11 @@
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ email: emailParam, token })
-        }).then(res => res.json()).then(data => {
-          if (data.isValid) {
+        }).then(res => res.text()).then(txt => {
+          if (txt == 'true') {
             window.location.href = `/signup?email=${encodeURIComponent(emailParam)}&token=${encodeURIComponent(token)}`
           } else {
-            status.textContent = data.error ? data.error + " ✗" : "invalid code ✗"
+            status.textContent = txt + " ✗"
             status.className = 'input-status error'
           }
         }).catch((e) => {
@@ -271,8 +274,8 @@
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: emailParam, token: tokenParam })
-      }).then(res => res.json()).then(data => {
-        if (!data.isValid) window.location.href = `/signup?status=expired`
+      }).then(res => res.text()).then(txt => {
+        if (!txt == 'true') window.location.href = `/signup?status=expired`
       }).catch(() => { })
       document.getElementById('signupForm').classList.add('active')
       document.getElementById('step1').classList.add('completed')
@@ -322,23 +325,23 @@
 
         clearTimeout(usernameTimer)
         usernameTimer = setTimeout(() => {
-          fetch('/api/available-username', {
+          fetch('/api/is-available-username', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ username: username })
           })
-            .then(res => res.json())
-            .then(data => {
+            .then(res => res.text())
+            .then(txt => {
               if (e.target.value === username) {
-                if (data.available) {
+                if (txt == 'true') {
                   status.textContent = 'Available ✓'
                   status.className = 'input-status success'
                   validationState.username = true
-                } else if (data.available === false) {
+                } else if (txt == 'false') {
                   status.textContent = 'Taken ✗'
                   status.className = 'input-status error'
                 } else {
-                  status.textContent = 'Error checking ✗'
+                  status.textContent = txt + ' ✗'
                   status.className = 'input-status error'
                 }
               }
@@ -456,15 +459,12 @@
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(data)
-        }).then(res => {
-          if (res.ok) {
-            window.location.href = `/login?email=${encodeURIComponent(data.username)}`
+        }).then(res => res.text()).then(txt => {
+          if (txt == 'successful') {
+            window.location.href = `/login?username=${encodeURIComponent(data.username)}`
           } else {
-            res.json().then(({ error, redirect }) => {
-              alert(`${error}\n\n✗ Error creating account. Please try again, or contact amr@programmer.net`)
-              if (redirect) window.location.href = redirect
-            })
-              .catch(() => alert(`(${res.status}) ${res.statusText}\n\n✗ Error creating account. Please try again, or contact amr@programmer.net`))
+            alert(`${txt}\n\n✗ Error creating account. Please try again, or contact amr@programmer.net`)
+            if (txt == 'Invalid verification code') window.location.href = '/signup?status=expired'
           }
         }).catch(error => alert(`${error}\n\n✗ Error creating account. Please try again, or contact amr@programmer.net`))
           .finally(() => {

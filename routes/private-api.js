@@ -11,9 +11,9 @@ router.use(sessionParser({ touch: true, required: true }), rateLimit({
 }))
 
 router.get('/user', async (req, res) => {
-    const user = await User.get({ _id: req.session.userId }).catch(error => res.status(500).json({ error }))
+    const user = await User.get({ _id: req.session.userId }).catch(error => res.status(500).send(error))
     user.email = (await SecretUser.get({ _id: req.session.userId })).email
-    res.status(200).json(user)
+    res.status(200).send(user)
 })
 
 router.get('/session', (req, res) => {
