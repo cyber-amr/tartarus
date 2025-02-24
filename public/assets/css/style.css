@@ -123,6 +123,11 @@ button:disabled {
     font-size: 1.2em;
 }
 
+.button-container {
+    display: flex;
+    gap: 1rem;
+}
+
 .input-group {
     margin-bottom: 1.5rem;
     position: relative;
@@ -204,6 +209,17 @@ button:disabled {
     animation: blink 0.5s step-start 0s infinite;
 }
 
+.spinner-slash {
+    display: inline-block;
+    margin-left: 0.5rem;
+}
+
+.spinner-slash::before {
+    content: '|';
+    animation: spin-slash 0.8s step-end infinite;
+}
+
+
 @keyframes blink {
     50% {
         opacity: 0;
@@ -217,5 +233,23 @@ button:disabled {
 
     100% {
         transform: rotate(360deg);
+    }
+}
+
+@keyframes spin-slash {
+    0% {
+        content: '|';
+    }
+
+    25% {
+        content: '/';
+    }
+
+    50% {
+        content: '-';
+    }
+
+    75% {
+        content: '\\';
     }
 }
