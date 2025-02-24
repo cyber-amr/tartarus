@@ -66,6 +66,7 @@ router.post('/login', rateLimit({ keyGenerator: req => getIP(req), limit: 5, win
 
     res.cookie('sessionId', _id, {
         httpOnly: true,
+        signed: true,
         secure: process.env.NODE_ENV !== 'development',
         sameSite: "strict",
         path: '/',

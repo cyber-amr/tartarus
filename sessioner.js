@@ -68,7 +68,7 @@ async function createSession({ userId, ip, maxAge = DEFAULT_EXPIRE_TIME }) {
 
 function sessionParser({ touch = false, required = false } = {}) {
     return async (req, res, next) => {
-        const _id = process.env.NODE_ENV === 'development' ? req.cookies.sessionId : req.signedCookies.sessionId
+        const _id = req.signedCookies.sessionId
         if (!isUUIDv4(_id)) return required ? res.status(401).json({ error: 'Unauthorized' }) : next()
         req.session = await Session.get(_id)
 
