@@ -11,19 +11,19 @@ router.use(rateLimit({
     windowMs: 30 * 1000
 }))
 
-router.post('/available-username', async (req, res) => {
+router.post('/is-available-username', async (req, res) => {
     const username = req.body?.username
     if (!isUsername(username)) return res.status(400).json({ error: 'username is required, max 16 characters of A-z, 0-9 and _ only' })
 
-    res.json({ available: !await User.exists({ username }) })
+    res.send(!await User.exists({ username }))
 })
 
-router.post('/registered-email', async (req, res) => {
+router.post('/is-registered-email', async (req, res) => {
     const email = req.body?.email
     if (!email) return res.status(400).json({ error: 'email is required' })
     if (!isEmail(email)) return res.status(400).json({ error: 'Unsupported email format' })
 
-    res.json({ registered: await SecretUser.exists({ email }) })
+    res.send(await SecretUser.exists({ email }))
 })
 
 module.exports = router;
