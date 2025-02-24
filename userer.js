@@ -45,7 +45,7 @@ class SecretUser {
     }
 
     static async exists({ _id, email }) {
-        return await db.collection('users').find(
+        return await db.collection('secrets').find(
             { _id, email },
             {
                 collation: { locale: 'en', strength: 2 },
