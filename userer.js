@@ -75,6 +75,7 @@ async function createUser({ username, email, password, birthDate, displayName },
         return { errorCode: 409, error: 'email already registered, try logging-in' }
     }
     q.add(email)
+    console.log(11)
 
     const _id = userSnowflaker.nextId()
     const hashedPassword = hash(_id + password + process.env.SECRET_SALT ?? "")
@@ -97,6 +98,7 @@ async function createUser({ username, email, password, birthDate, displayName },
     } catch (error) {
         db.collection('users').deleteOne({ _id })
         db.collection('secrets').deleteOne({ _id })
+        console.error(error)
         return { errorCode: 500, error }
     } finally {
         q.delete(username)
